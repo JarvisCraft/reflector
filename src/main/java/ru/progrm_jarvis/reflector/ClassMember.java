@@ -1,4 +1,4 @@
-package ru.progrm_jarvid.reflector;
+package ru.progrm_jarvis.reflector;
 
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

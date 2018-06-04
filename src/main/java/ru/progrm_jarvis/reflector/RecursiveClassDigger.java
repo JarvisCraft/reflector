@@ -1,15 +1,16 @@
-package ru.progrm_jarvid.reflector;
+package ru.progrm_jarvis.reflector;
 
-import com.sun.istack.internal.Nullable;
 import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import ru.progrm_jarvid.reflector.util.Possible;
-import ru.progrm_jarvid.reflector.util.ThrowingFunction;
+import org.jetbrains.annotations.Nullable;
+import ru.progrm_jarvis.reflector.util.Possible;
+import ru.progrm_jarvis.reflector.util.ThrowingFunction;
 
 import java.util.Optional;
 
 @UtilityClass
+@SuppressWarnings("WeakerAccess")
 public class RecursiveClassDigger {
 
     public <T, R, E extends Throwable> Optional<ClassMember<? super T, R>> dig(

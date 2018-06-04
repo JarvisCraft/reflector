@@ -1,4 +1,4 @@
-package ru.progrm_jarvid.reflector.util;
+package ru.progrm_jarvis.reflector.util;
 
 import lombok.Value;
 

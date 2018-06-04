@@ -1,7 +1,7 @@
-package ru.progrm_jarvid.reflector;
+package ru.progrm_jarvis.reflector;
 
 import org.junit.Test;
-import ru.progrm_jarvid.reflector.util.Possible;
+import ru.progrm_jarvis.reflector.util.Possible;
 
 import static org.junit.Assert.*;
 
