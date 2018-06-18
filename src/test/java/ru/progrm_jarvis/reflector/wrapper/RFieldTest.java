@@ -19,7 +19,6 @@ package ru.progrm_jarvis.reflector.wrapper;
 import lombok.val;
 import org.junit.Test;
 
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
 import static ru.progrm_jarvis.reflector.wrapper.RField.*;
@@ -34,7 +33,7 @@ public class RFieldTest {
                 "Hello".length(),
                 ((char[]) of(String.class.getDeclaredField("value")).getValue("Hello")).length
         );
-org.mockito.Mockito.mock()
+
         assertEquals(
                 StandardCharsets.UTF_8,
                 of(StandardCharsets.class.getDeclaredField("UTF_8")).getValue()
