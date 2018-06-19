@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-echo 'Executing deploy script for branch $TRAVIS_BRANCH (PR: $TRAVIS_PULL_REQUEST)'
-if [ "$TRAVIS_BRANCH" = 'master' ] && [ "$TRAVIS_PULL_REQUEST" == 'false' ]; then
+printf 'Executing deploy script for branch ${TRAVIS_BRANCH} (PR: %s)' "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST}"
+if [ "${TRAVIS_BRANCH}" = 'master' ] && [ "${TRAVIS_PULL_REQUEST}" == 'false' ]; then
     # Decrypt certificate
     echo 'Decrypting certificate'
-    openssl aes-256-cbc -K ${encrypted_24382952c2f5_key} -iv ${encrypted_24382952c2f5_iv} \
+    openssl aes-256-cbc -K "${encrypted_24382952c2f5_key}" -iv "${encrypted_24382952c2f5_iv}" \
     -in .travis/codesigning.asc.enc -out .travis/codesigning.asc -d
     echo 'Certificate has been successfully decrypted, importing it'
     # Import decrypted certificate
