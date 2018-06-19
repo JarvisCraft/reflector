@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-printf 'Executing deploy script for branch %s (PR: %s)' "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST}"
+printf 'Executing deploy script for branch %s (PR: %s)\n' "${TRAVIS_BRANCH}" "${TRAVIS_PULL_REQUEST}"
 if [ "${TRAVIS_BRANCH}" = 'master' ] && [ "${TRAVIS_PULL_REQUEST}" == 'false' ]; then
     # Decrypt certificate
     echo 'Decrypting certificate'
