@@ -10,7 +10,7 @@ if [ "${TRAVIS_BRANCH}" = 'master' ] && [ "${TRAVIS_PULL_REQUEST}" == 'false' ];
     gpg --fast-import .travis/codesigning.asc
     echo 'Certificate has been successfully imported, deploying'
     # Deploy to OSSRH repository
-    mvn deploy -P sign,build-extras --settings cd/mvnsettings.xml
+    mvn deploy -P sign,build-extras --settings .travis/mvnsettings.xml
     echo 'Deploy successful'
 else
     echo 'Deploy conditions are not met'
