@@ -16,7 +16,35 @@
 
 package ru.progrm_jarvis.reflector.util;
 
+import lombok.SneakyThrows;
+
+import java.util.function.Consumer;
+
+/**
+ * {@inheritDoc}
+ * This {@code Consumer} extension provides {@link #consume(Object)} method
+ * which is the same as {@link #accept(Object)} but is declared as {@code throws Throwable}.
+ */
 @FunctionalInterface
-public interface CheckedConsumer<T> {
-    void accept(T t) throws Throwable;
+public interface CheckedConsumer<T> extends Consumer<T> {
+
+    /**
+     * Performs this operation on the given argument.
+     *
+     * @param t the input argument
+     * @throws Throwable if an exception occurs while performing
+     */
+    void consume(T t) throws Throwable;
+
+    /**
+     * {@inheritDoc}
+     * Invokes {@link #consume(Object)} wrapping any thrown catched exception with {@code RuntimeException}.
+     *
+     * @throws RuntimeException if an exception occurs while performing
+     */
+    @Override
+    @SneakyThrows
+    default void accept(final T t) {
+        consume(t);
+    }
 }

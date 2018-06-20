@@ -44,7 +44,7 @@ public class UnsafeUtil {
     }
 
     public void useUnsafe(@NonNull final CheckedConsumer<Unsafe> consumer) throws Throwable {
-        consumer.accept(UNSAFE);
+        consumer.consume(UNSAFE);
     }
 
     public <T> T useUnsafeAndGet(@NonNull final CheckedFunction<Unsafe, T> function) throws Throwable {

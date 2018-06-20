@@ -30,9 +30,9 @@ import java.util.concurrent.ExecutionException;
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class RMethod<T> implements ReflectorWrapper {
+public class RMethod<T, R> implements ReflectorWrapper {
 
-    private static final Cache<Method, RMethod<?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
+    private static final Cache<Method, RMethod<?, ?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
 
     /**
      * Actual method wrapped.
@@ -41,20 +41,20 @@ public class RMethod<T> implements ReflectorWrapper {
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public T invoke(@Nullable final Object object, @NonNull final Object... arguments) {
-        return AccessHelper.accessAndGet(method, method -> (T) method.invoke(object, arguments));
+    public R invoke(@Nullable final Object object, @NonNull final Object... arguments) {
+        return AccessHelper.accessAndGet(method, method -> (R) method.invoke(object, arguments));
     }
 
-    public T invokeStatic(@NonNull final Object... arguments) {
+    public R invokeStatic(@NonNull final Object... arguments) {
         return invoke(null, arguments);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> RMethod<T> of(@NonNull final Method method) {
+    public static <T, R> RMethod<T, R> of(@NonNull final Method method) {
         try {
-            return ((RMethod<T>) CACHE.get(method, () -> new RMethod<>(method)));
+            return ((RMethod<T, R>) CACHE.get(method, () -> new RMethod<>(method)));
         } catch (final ExecutionException e) {
-            throw new RuntimeException("Could not obtain RConstructor<T> value from cache");
+            throw new RuntimeException("Could not obtain RMethod<R> value from cache");
         }
     }
 }

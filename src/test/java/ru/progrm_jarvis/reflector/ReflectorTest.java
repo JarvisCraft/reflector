@@ -3,7 +3,7 @@
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *    You may obtain a copy testOf the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -16,36 +16,34 @@
 
 package ru.progrm_jarvis.reflector;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import static ru.progrm_jarvis.reflector.Reflector.*;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
+import static ru.progrm_jarvis.reflector.Reflector.newUnsafeInstance;
 
 @SuppressWarnings("WeakerAccess")
 public class ReflectorTest {
 
     @Test
     public void testDigForField() throws Exception {
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredField("baz"))),
                 Reflector.digForField(Object3.class, field -> field.getName().equals("baz"), Object.class)
         );
 
-        Assert.assertEquals(Optional.of(
+        assertEquals(Optional.of(
                 new ClassMember<>(Object2.class, Object2.class.getDeclaredField("bar"))),
                 Reflector.digForField(Object3.class, field -> field.getName().equals("bar"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object1.class, Object1.class.getDeclaredField("foo"))),
                 Reflector.digForField(Object3.class, field -> field.getName().equals("foo"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object4.class, Object4.class.getDeclaredField("field1"))),
                 Reflector.digForField(Object4.class, field -> field.getName().equals("field1"), Object.class)
         );
@@ -61,37 +59,37 @@ public class ReflectorTest {
 
     @Test
     public void testDigForMethod() throws Exception {
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredMethod("baz"))),
                 Reflector.digForMethod(Object3.class, field -> field.getName().equals("baz"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object2.class, Object2.class.getDeclaredMethod("bar"))),
                 Reflector.digForMethod(Object3.class, field -> field.getName().equals("bar"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object1.class, Object1.class.getDeclaredMethod("foo"))),
                 Reflector.digForMethod(Object3.class, field -> field.getName().equals("foo"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Interface3.class, Interface3.class.getDeclaredMethod("i3"))),
                 Reflector.digForMethod(Object4.class, field -> field.getName().equals("i3"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Interface2.class, Interface2.class.getDeclaredMethod("i2"))),
                 Reflector.digForMethod(Object4.class, field -> field.getName().equals("i2"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Interface1.class, Interface1.class.getDeclaredMethod("i1"))),
                 Reflector.digForMethod(Object4.class, field -> field.getName().equals("i1"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object4.class, Object4.class.getDeclaredMethod("method1"))),
                 Reflector.digForMethod(Object4.class, field -> field.getName().equals("method1"), Object.class)
         );
@@ -112,30 +110,30 @@ public class ReflectorTest {
     @Test
     @SuppressWarnings({"AssertEqualsBetweenInconvertibleTypes", "JavaReflectionMemberAccess"})
     public void testDigForConstructor() throws Exception {
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredConstructor())),
                 Reflector.digForConstructor(Object3.class,
                         constructor -> constructor.getName().endsWith("$Object3"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object2.class, Object2.class.getDeclaredConstructor())),
                 Reflector.digForConstructor(Object3.class,
                         constructor -> constructor.getName().endsWith("$Object2"), Object.class)
         );
 
-        Assert.assertEquals(Optional.of(new ClassMember<>(Object1.class, Object1.class.getDeclaredConstructor())),
+        assertEquals(Optional.of(new ClassMember<>(Object1.class, Object1.class.getDeclaredConstructor())),
                 Reflector.digForConstructor(Object3.class,
                         constructor -> constructor.getName().endsWith("$Object1"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object4.class, Object4.class.getDeclaredConstructor())),
                 Reflector.digForConstructor(Object4.class,
                         constructor -> constructor.getName().endsWith("$Object4"), Object.class)
         );
 
-        Assert.assertEquals(
+        assertEquals(
                 Optional.of(new ClassMember<>(Object5.class, Object5.class.getDeclaredConstructor(getClass()))),
                 Reflector.digForConstructor(Object5.class,
                         constructor -> constructor.getName().endsWith("$Object5")
