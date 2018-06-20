@@ -14,9 +14,7 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
-
 /**
- * Super-interface for all reflector-wrappers.
+ * Utilities used by Reflector but not directly related to it.
  */
-public interface ReflectorWrapper {}
+package ru.progrm_jarvis.reflector.util;

@@ -21,10 +21,23 @@ import lombok.RequiredArgsConstructor;
 import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
+/**
+ * POJO representing a member of class.
+ *
+ * @param <T> type of class containing member
+ * @param <R> member of class
+ */
 @Value
 @RequiredArgsConstructor
 public class ClassMember<T, R> {
 
+    /**
+     * Class owning this member.
+     */
     @NonNull private Class<? extends T> owner;
+
+    /**
+     * Member contained in the class.
+     */
     @Nullable private R value;
 }

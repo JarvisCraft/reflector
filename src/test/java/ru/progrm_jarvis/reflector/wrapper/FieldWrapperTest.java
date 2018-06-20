@@ -20,9 +20,9 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.progrm_jarvis.reflector.wrapper.RField.of;
+import static ru.progrm_jarvis.reflector.wrapper.FieldWrapper.of;
 
-public class RFieldTest {
+public class FieldWrapperTest {
 
     @Test
     public void testOf() throws NoSuchFieldException {
