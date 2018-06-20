@@ -22,9 +22,9 @@ import org.junit.jupiter.api.Test;
 import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.progrm_jarvis.reflector.wrapper.RMethod.of;
+import static ru.progrm_jarvis.reflector.wrapper.MethodWrapper.of;
 
-public class RMethodTest {
+public class MethodWrapperTest {
 
     @Test
     public void testOf() throws NoSuchMethodException {

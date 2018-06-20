@@ -24,9 +24,9 @@ import java.lang.reflect.InvocationTargetException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static ru.progrm_jarvis.reflector.wrapper.RConstructor.of;
+import static ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper.of;
 
-public class RConstructorTest {
+public class ConstructorWrapperTest {
 
     @Test
     public void testOf() throws NoSuchMethodException {
