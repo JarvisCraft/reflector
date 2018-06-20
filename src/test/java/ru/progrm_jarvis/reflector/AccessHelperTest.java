@@ -3,7 +3,7 @@
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
+ *    You may obtain a copy testOf the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,11 +17,10 @@
 package ru.progrm_jarvis.reflector;
 
 import lombok.val;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import static ru.progrm_jarvis.reflector.AccessHelper.*;
-
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static ru.progrm_jarvis.reflector.AccessHelper.operate;
 
 public class AccessHelperTest {
 

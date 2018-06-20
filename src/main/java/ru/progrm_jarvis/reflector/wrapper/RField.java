@@ -30,9 +30,9 @@ import java.util.concurrent.ExecutionException;
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class RField<T> implements ReflectorWrapper {
+public class RField<T, R> implements ReflectorWrapper {
 
-    private static final Cache<Field, RField<?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
+    private static final Cache<Field, RField<?, ?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
 
     /**
      * Actual field wrapped.
@@ -41,28 +41,28 @@ public class RField<T> implements ReflectorWrapper {
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public T getValue(@Nullable final Object object) {
-        return AccessHelper.accessAndGet(field, field -> (T) field.get(object));
+    public R getValue(@Nullable final T object) {
+        return AccessHelper.accessAndGet(field, field -> (R) field.get(object));
     }
 
-    public T getValue() {
+    public R getValue() {
         return getValue(null);
     }
 
     @SneakyThrows
-    public void setValue(@Nullable final Object object, @Nullable final Object value) {
+    public void setValue(@Nullable final T object, @Nullable final R value) {
         AccessHelper.operate(field, field -> field.set(object, value));
     }
 
-    public void setValue(@Nullable final Object value) {
+    public void setValue(@Nullable final R value) {
         setValue(null, value);
     }
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public T updateValue(@Nullable final Object object, @Nullable final Object value) {
+    public R updateValue(@Nullable final Object object, @Nullable final Object value) {
         return AccessHelper.operateAndGet(field, field -> {
-            val oldValue = (T) field.get(object);
+            val oldValue = (R) field.get(object);
 
             field.set(object, value);
 
@@ -70,16 +70,16 @@ public class RField<T> implements ReflectorWrapper {
         });
     }
 
-    public T updateValue(@Nullable final Object value) {
+    public R updateValue(@Nullable final Object value) {
         return updateValue(null, value);
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> RField<T> of(@NonNull final Field field) {
+    public static <T, R> RField<T, R> of(@NonNull final Field field) {
         try {
-            return ((RField<T>) CACHE.get(field, () -> new RField<>(field)));
+            return ((RField<T, R>) CACHE.get(field, () -> new RField<>(field)));
         } catch (final ExecutionException e) {
-            throw new RuntimeException("Could not obtain RConstructor<T> value from cache");
+            throw new RuntimeException("Could not obtain RField<R> value from cache");
         }
     }
 }

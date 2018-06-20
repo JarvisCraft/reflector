@@ -109,53 +109,53 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T> RField<T> getField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RField<T, R> getField(@NonNull final Class<?> clazz, @NonNull final String name) {
         return RField.of(clazz.getField(name));
     }
 
-    public <T> RField<T> getField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RField<T, R> getField(@NonNull final Object object, @NonNull final String name) {
         return getField(classOf(object), name);
     }
 
     @SneakyThrows
-    public <T> RField<T> getDeclaredField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RField<T, R> getDeclaredField(@NonNull final Class<?> clazz, @NonNull final String name) {
         return RField.of(clazz.getDeclaredField(name));
     }
 
-    public <T> RField<T> getDeclaredField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RField<T, R> getDeclaredField(@NonNull final Object object, @NonNull final String name) {
         return getDeclaredField(classOf(object), name);
     }
 
-    public <T> Optional<RField<T>> getFieldOptional(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Optional<RField<T, R>> getFieldOptional(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
         return digForField(clazz, predicate, Object.class).map(member -> RField.of(member.getValue()));
     }
 
-    public <T> Optional<RField<T>> getFieldOptional(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Optional<RField<T, R>> getFieldOptional(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
         return getFieldOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T> RField<T> getField(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
+    public <T, R> RField<T, R> getField(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
         return RField.of(digForField(clazz, predicate, Object.class).get().getValue());
     }
 
-    public <T> RField<T> getField(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> RField<T, R> getField(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
         return getField(classOf(object), predicate);
     }
 
-    public <T> Optional<RField<T>> getAnyFieldOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> Optional<RField<T, R>> getAnyFieldOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
         return getFieldOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T> Optional<RField<T>> getAnyFieldOptional(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> Optional<RField<T, R>> getAnyFieldOptional(@NonNull final Object object, @NonNull final String name) {
         return getAnyFieldOptional(classOf(object), name);
     }
 
-    public <T> RField<T> getAnyField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RField<T, R> getAnyField(@NonNull final Class<?> clazz, @NonNull final String name) {
         return getField(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T> RField<T> getAnyField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RField<T, R> getAnyField(@NonNull final Object object, @NonNull final String name) {
         return getAnyField(classOf(object), name);
     }
 
@@ -164,55 +164,55 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T> RMethod<T> getMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
         return RMethod.of(clazz.getMethod(name));
     }
 
-    public <T> RMethod<T> getMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getMethod(@NonNull final Object object, @NonNull final String name) {
         return getMethod(classOf(object), name);
     }
 
     @SneakyThrows
-    public <T> RMethod<T> getDeclaredMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getDeclaredMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
         return RMethod.of(clazz.getDeclaredMethod(name));
     }
 
-    public <T> RMethod<T> getDeclaredMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getDeclaredMethod(@NonNull final Object object, @NonNull final String name) {
         return getDeclaredMethod(classOf(object), name);
     }
 
-    public <T> Optional<RMethod<T>> getMethodOptional(@NonNull final Class<?> clazz,
+    public <T, R> Optional<RMethod<T, R>> getMethodOptional(@NonNull final Class<?> clazz,
                                                       @NonNull final Predicate<Method> predicate) {
         return digForMethod(clazz, predicate, Object.class).map(member -> RMethod.of(member.getValue()));
     }
 
-    public <T> Optional<RMethod<T>> getMethodOptional(@NonNull final Object object,
+    public <T, R> Optional<RMethod<T, R>> getMethodOptional(@NonNull final Object object,
                                                       @NonNull final Predicate<Method> predicate) {
         return getMethodOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T> RMethod<T> getMethod(@NonNull final Class<?> clazz, @NonNull final Predicate<Method> predicate) {
+    public <T, R> RMethod<T, R> getMethod(@NonNull final Class<?> clazz, @NonNull final Predicate<Method> predicate) {
         return RMethod.of(digForMethod(clazz, predicate, Object.class).get().getValue());
     }
 
-    public <T> RMethod<T> getMethod(@NonNull final Object object, @NonNull final Predicate<Method> predicate) {
+    public <T, R> RMethod<T, R> getMethod(@NonNull final Object object, @NonNull final Predicate<Method> predicate) {
         return getMethod(classOf(object), predicate);
     }
 
-    public <T> Optional<RMethod<T>> getAnyMethodOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> Optional<RMethod<T, R>> getAnyMethodOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
         return getMethodOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T> Optional<RMethod<T>> getAnyMethodOptional(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> Optional<RMethod<T, R>> getAnyMethodOptional(@NonNull final Object object, @NonNull final String name) {
         return getAnyMethodOptional(classOf(object), name);
     }
 
-    public <T> RMethod<T> getAnyMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getAnyMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
         return getMethod(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T> RMethod<T> getAnyMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> RMethod<T, R> getAnyMethod(@NonNull final Object object, @NonNull final String name) {
         return getAnyMethod(classOf(object), name);
     }
 
