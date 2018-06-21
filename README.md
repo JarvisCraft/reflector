@@ -54,4 +54,4 @@ it is not able to change the value of `static final` field due to JVM limitation
 - [x] Configure Travis-CI
 - [x] Deploy to Maven Central automatically
 - [ ] Fully cover with JavaDocs
-- [ ] Create wiki and reach ReadMe
+- [ ] Create wiki and rich ReadMe
