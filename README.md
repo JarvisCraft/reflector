@@ -5,13 +5,11 @@ master:
 [![Build Status](https://travis-ci.org/JarvisCraft/reflector.svg?branch=master)](https://travis-ci.org/JarvisCraft/reflector) 
 development: 
 [![Build Status](https://travis-ci.org/JarvisCraft/reflector.svg?branch=development)](https://travis-ci.org/JarvisCraft/reflector)
-
-##Main purpose
+## Main purpose
 **Reflector** provides comfortable and fast access to Java's reflection-API wrapping common objects with fast methods
 which don't throw any checked exceptions. This approach lets you use this in initialization-statements anywhere in your class.
-##Usage
-###Adding as Maven dependency
-[![Maven Central](https://img.shields.io/maven-central/v/ru.progrm-jarvis.reflector/reflector.svg)](https://mvnrepository.com/artifact/ru.progrm-jarvis.reflector/reflector/)
+## Usage
+### Adding as Maven dependency [![Maven Central](https://img.shields.io/maven-central/v/ru.progrm-jarvis.reflector/reflector.svg)](https://mvnrepository.com/artifact/ru.progrm-jarvis.reflector/reflector/)
 Reflector is available in Maven Central so add the following to your `pom.xml`s `dependencies` tag in order to add it as dependency.
 ```xml
 <dependency>
@@ -20,13 +18,13 @@ Reflector is available in Maven Central so add the following to your `pom.xml`s 
     <version>1.0</version>
 </dependency>
 ```
-######Notes:
+###### Notes:
 >`version` may be any valid version, for full list of them
 see [Maven Central versions](https://mvnrepository.com/artifact/ru.progrm-jarvis.reflector/reflector/)
 
 >So called nightly builds are also available with `-SNAPSHOT` suffix after version name as by Maven specification
-###Reflection
-####Fields
+### Reflection
+#### Fields
 This example shows how you can work with fields using reflector
 ```java
 import ru.progrm_jarvis.reflector.Reflector;
@@ -48,10 +46,10 @@ public class StringModifier {
     }
 }
 ```
-######Note
+###### Note
 >Although reflector is trying hard to be able to set values of fields ignoring access-limitations and `final` keyword,
 it is not able to change the value of `static final` field due to JVM limitation.
-###Goals
+### Goals
 - [x] Develop core
 - [x] Configure Travis-CI
 - [x] Deploy to Maven Central automatically
