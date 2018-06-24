@@ -109,53 +109,53 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return FieldWrapper.of(clazz.getField(name));
     }
 
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final String name) {
         return getField(classOf(object), name);
     }
 
     @SneakyThrows
-    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return FieldWrapper.of(clazz.getDeclaredField(name));
     }
 
-    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final T object, @NonNull final String name) {
         return getDeclaredField(classOf(object), name);
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
         return digForField(clazz, predicate, Object.class).map(member -> FieldWrapper.of(member.getValue()));
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
         return getFieldOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<?> clazz, @NonNull final Predicate<Field> predicate) {
+    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
         return FieldWrapper.of(digForField(clazz, predicate, Object.class).get().getValue());
     }
 
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Object object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
         return getField(classOf(object), predicate);
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getFieldOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final T object, @NonNull final String name) {
         return getAnyFieldOptional(classOf(object), name);
     }
 
-    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getField(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final T object, @NonNull final String name) {
         return getAnyField(classOf(object), name);
     }
 
@@ -164,55 +164,55 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
         return MethodWrapper.of(clazz.getMethod(name));
     }
 
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final String name) {
         return getMethod(classOf(object), name);
     }
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
         return MethodWrapper.of(clazz.getDeclaredMethod(name));
     }
 
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final T object, @NonNull final String name) {
         return getDeclaredMethod(classOf(object), name);
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Class<?> clazz,
+    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Class<T> clazz,
                                                                   @NonNull final Predicate<Method> predicate) {
         return digForMethod(clazz, predicate, Object.class).map(member -> MethodWrapper.of(member.getValue()));
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Object object,
+    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final T object,
                                                                   @NonNull final Predicate<Method> predicate) {
         return getMethodOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<?> clazz, @NonNull final Predicate<Method> predicate) {
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final Predicate<Method> predicate) {
         return MethodWrapper.of(digForMethod(clazz, predicate, Object.class).get().getValue());
     }
 
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Object object, @NonNull final Predicate<Method> predicate) {
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final Predicate<Method> predicate) {
         return getMethod(classOf(object), predicate);
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getMethodOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final T object, @NonNull final String name) {
         return getAnyMethodOptional(classOf(object), name);
     }
 
-    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final Class<?> clazz, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getMethod(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final Object object, @NonNull final String name) {
+    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final T object, @NonNull final String name) {
         return getAnyMethod(classOf(object), name);
     }
 
