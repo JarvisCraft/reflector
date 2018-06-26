@@ -28,132 +28,89 @@ import java.lang.reflect.*;
 @UtilityClass
 public class AccessHelper {
 
-    private static final Field
-            FIELD_MODIFIERS,
-            METHOD_MODIFIERS,
-            CONSTRUCTOR_MODIFIERS;
+    private static final Field FIELD_MODIFIERS;
 
     static {
         try {
             FIELD_MODIFIERS = Field.class.getDeclaredField("modifiers");
-            METHOD_MODIFIERS = Field.class.getDeclaredField("modifiers");
-            CONSTRUCTOR_MODIFIERS = Field.class.getDeclaredField("modifiers");
         } catch (final NoSuchFieldException e) {
             throw new RuntimeException("Could not initialize reflector's AccessHelper due to exception", e);
         }
     }
 
-    public  <T extends AccessibleObject, R> R accessAndGet(final T object, final CheckedFunction<T, R> CheckedFunction)
+    public  <T extends AccessibleObject, R> R accessAndGet(final T object, final CheckedFunction<T, R> checkedFunction)
             throws Throwable {
-        if (object.isAccessible()) return CheckedFunction.apply(object);
+        if (object.isAccessible()) return checkedFunction.use(object);
         try {
             object.setAccessible(true);
-            return CheckedFunction.apply(object);
+            return checkedFunction.use(object);
         } finally {
             object.setAccessible(false);
         }
     }
 
-    public <T extends AccessibleObject> void access(final T object, final CheckedConsumer<T> CheckedConsumer)
+    public <T extends AccessibleObject> void access(final T object, final CheckedConsumer<T> checkedConsumer)
             throws Throwable {
-        if (object.isAccessible()) CheckedConsumer.consume(object);
+        if (object.isAccessible()) checkedConsumer.consume(object);
         else try {
             object.setAccessible(true);
             FIELD_MODIFIERS.setAccessible(true);
-            CheckedConsumer.consume(object);
+            checkedConsumer.consume(object);
         } finally {
             object.setAccessible(false);
         }
     }
 
     @SneakyThrows
-    public <R> R operateAndGet(@NonNull final Field field, @NonNull final CheckedFunction<Field, R> CheckedFunction) {
+    public <R> R operateAndGet(@NonNull final Field field, @NonNull final CheckedFunction<Field, R> checkedFunction) {
         val modifiers = field.getModifiers();
         if (Modifier.isFinal(modifiers)) {
             if (!FIELD_MODIFIERS.isAccessible()) FIELD_MODIFIERS.setAccessible(true);
             try {
                 FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
-                return accessAndGet(field, CheckedFunction);
+                return accessAndGet(field, checkedFunction);
             } finally {
                 FIELD_MODIFIERS.set(field, modifiers);
             }
         }
-        return accessAndGet(field, CheckedFunction);
+        return accessAndGet(field, checkedFunction);
     }
 
     @SneakyThrows
-    public void operate(@NonNull final Field field, @NonNull final CheckedConsumer<Field> CheckedConsumer) {
+    public void operate(@NonNull final Field field, @NonNull final CheckedConsumer<Field> checkedConsumer) {
         val modifiers = field.getModifiers();
         if (Modifier.isFinal(modifiers)) {
             if (!FIELD_MODIFIERS.isAccessible()) FIELD_MODIFIERS.setAccessible(true);
             try {
                 FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
-                access(field, CheckedConsumer);
+                access(field, checkedConsumer);
             } finally {
                 FIELD_MODIFIERS.set(field, modifiers);
             }
-        } else access(field, CheckedConsumer);
+        } else access(field, checkedConsumer);
     }
 
     @SneakyThrows
     public <R> R operateAndGet(@NonNull final Method method,
-                               @NonNull final CheckedFunction<Method, R> CheckedFunction) {
-        val modifiers = method.getModifiers();
-        if (Modifier.isFinal(modifiers)) {
-            if (!METHOD_MODIFIERS.isAccessible()) METHOD_MODIFIERS.setAccessible(true);
-            try {
-                METHOD_MODIFIERS.set(method, modifiers & ~Modifier.FINAL);
-                return accessAndGet(method, CheckedFunction);
-            } finally {
-                METHOD_MODIFIERS.set(method, modifiers);
-            }
-        }
-        return accessAndGet(method, CheckedFunction);
+                               @NonNull final CheckedFunction<Method, R> checkedFunction) {
+        return accessAndGet(method, checkedFunction);
     }
 
     @SneakyThrows
     public void operate(@NonNull final Method method,
-                        @NonNull final CheckedConsumer<Method> CheckedConsumer) {
-        val modifiers = method.getModifiers();
-        if (Modifier.isFinal(modifiers)) {
-            if (!METHOD_MODIFIERS.isAccessible()) METHOD_MODIFIERS.setAccessible(true);
-            try {
-                METHOD_MODIFIERS.set(method, modifiers & ~Modifier.FINAL);
-                access(method, CheckedConsumer);
-            } finally {
-                METHOD_MODIFIERS.set(method, modifiers);
-            }
-        } else access(method, CheckedConsumer);
+                        @NonNull final CheckedConsumer<Method> checkedConsumer) {
+        access(method, checkedConsumer);
     }
 
     @SneakyThrows
     public <R> R operateAndGet(@NonNull final Constructor constructor,
-                               @NonNull final CheckedFunction<Constructor, R> CheckedFunction) {
-        val modifiers = constructor.getModifiers();
-        if (Modifier.isFinal(modifiers)) {
-            if (!CONSTRUCTOR_MODIFIERS.isAccessible()) CONSTRUCTOR_MODIFIERS.setAccessible(true);
-            try {
-                CONSTRUCTOR_MODIFIERS.set(constructor, modifiers & ~Modifier.FINAL);
-                return accessAndGet(constructor, CheckedFunction);
-            } finally {
-                CONSTRUCTOR_MODIFIERS.set(constructor, modifiers);
-            }
-        }
-        return accessAndGet(constructor, CheckedFunction);
+                               @NonNull final CheckedFunction<Constructor, R> checkedFunction) {
+        return accessAndGet(constructor, checkedFunction);
     }
 
     @SneakyThrows
     public void operate(@NonNull final Constructor constructor,
-                        @NonNull final CheckedConsumer<Constructor> CheckedConsumer) {
-        val modifiers = constructor.getModifiers();
-        if (Modifier.isFinal(modifiers)) {
-            if (!CONSTRUCTOR_MODIFIERS.isAccessible()) CONSTRUCTOR_MODIFIERS.setAccessible(true);
-            try {
-                CONSTRUCTOR_MODIFIERS.set(constructor, modifiers & ~Modifier.FINAL);
-                access(constructor, CheckedConsumer);
-            } finally {
-                CONSTRUCTOR_MODIFIERS.set(constructor, modifiers);
-            }
-        } else access(constructor, CheckedConsumer);
+                        @NonNull final CheckedConsumer<Constructor> checkedConsumer) {
+        access(constructor, checkedConsumer);
     }
 }

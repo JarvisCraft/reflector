@@ -100,8 +100,8 @@ public class Reflector {
     }
 
     @SuppressWarnings("unchecked")
-    public <T> Class<? extends T> classOf(@NonNull final T object) {
-        return (Class<? extends T>) object.getClass();
+    public <T> Class<T> classOf(@NonNull final T object) {
+        return (Class<T>) object.getClass();
     }
 
     ///////////////////////////////////////////////////////////////////////////

@@ -16,8 +16,22 @@
 
 package ru.progrm_jarvis.reflector.util;
 
+/**
+ * {@inheritDoc}
+ * This is the same as normal {@code CheckedFunction} but its {@code Throwable} type is known at compile time.
+ *
+ * @param <T> the type of the input to the function
+ * @param <R> the type of the result of the function
+ * @param <E> the type of the exception to be declared as checked
+ */
 @FunctionalInterface
-public interface ThrowingFunction<T, R, E extends Throwable> {
+public interface ThrowingFunction<T, R, E extends Throwable> extends CheckedFunction<T, R> {
 
-    R apply(T t) throws E;
+    /**
+     * {@inheritDoc}
+     *
+     * @throws E if an exception occurs while performing
+     */
+    @Override
+    R use(T t) throws E;
 }
