@@ -18,6 +18,11 @@ package ru.progrm_jarvis.reflector.util;
 
 import lombok.Value;
 
+/**
+ * An immutable value container which
+ *
+ * @param <T>
+ */
 @Value(staticConstructor = "of")
 public class Possible<T> {
 

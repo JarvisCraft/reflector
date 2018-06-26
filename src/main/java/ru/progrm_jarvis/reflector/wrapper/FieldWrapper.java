@@ -24,6 +24,7 @@ import ru.progrm_jarvis.reflector.AccessHelper;
 
 import java.lang.reflect.Field;
 import java.util.concurrent.ExecutionException;
+import java.util.function.Function;
 
 /**
  * Wrapper for {@link Field} to be used with Reflector.
@@ -113,7 +114,7 @@ public class FieldWrapper<T, V> implements ReflectorWrapper {
      */
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public V updateValue(@Nullable final Object instance, @Nullable final V value) {
+    public V updateValue(@Nullable final T instance, @Nullable final V value) {
         return AccessHelper.operateAndGet(field, field -> {
             val oldValue = (V) field.get(instance);
 
@@ -133,5 +134,37 @@ public class FieldWrapper<T, V> implements ReflectorWrapper {
      */
     public V updateValue(@Nullable final V value) {
         return updateValue(null, value);
+    }
+
+    /**
+     * Updates value of this field based on previous value using function given ignoring any limitations if possible.
+     *
+     * @param instance instance of which field's value is set
+     * @param function function to create new value based on old
+     * @return previous value of this field
+     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
+     */
+    @SneakyThrows
+    @SuppressWarnings("unchecked")
+    public V updateValue(@Nullable final T instance, @NonNull final Function<V, V> function) {
+        return AccessHelper.operateAndGet(field, field -> {
+            val oldValue = (V) field.get(instance);
+
+            field.set(instance, function.apply(oldValue));
+
+            return oldValue;
+        });
+    }
+
+    /**
+     * Updates value of this field based on previous value using function given
+     * on no instance (which means that static value is to be updated) ignoring any limitations if possible.
+     *
+     * @param function function to create new value based on old
+     * @return previous value of this field
+     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
+     */
+    public V updateValue(@NonNull final Function<V, V> function) {
+        return updateValue(null, function);
     }
 }

@@ -22,7 +22,7 @@ import lombok.Value;
 import org.jetbrains.annotations.Nullable;
 
 /**
- * POJO representing a member of class.
+ * POJO representing a member of a class.
  *
  * @param <T> type of class containing member
  * @param <R> member of class

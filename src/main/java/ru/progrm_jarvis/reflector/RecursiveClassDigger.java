@@ -36,7 +36,7 @@ public class RecursiveClassDigger {
     ) throws E {
         // try find in clazz
         {
-            val possible = digger.apply(clazz);
+            val possible = digger.use(clazz);
             // if something was found then return it
             if (possible != null) return Optional.of(new ClassMember<>(clazz, possible.getValue()));
         }
@@ -55,7 +55,7 @@ public class RecursiveClassDigger {
     ) throws E {
         // try find in clazz
         {
-            val possible = digger.apply(clazz);
+            val possible = digger.use(clazz);
             // if something was found then return it
             if (possible != null) return Optional.of(new ClassMember<>(clazz, possible.getValue()));
         }

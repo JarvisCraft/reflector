@@ -16,7 +16,39 @@
 
 package ru.progrm_jarvis.reflector.util;
 
+import lombok.SneakyThrows;
+
+import java.util.function.Function;
+
+/**
+ * {@inheritDoc}
+ * This {@code Function} extension provides {@link #use(Object)} method
+ * which is the same as {@link #apply(Object)} but is declared as {@code throws Throwable}.
+ *
+ * @param <T> the type of the input to the function
+ * @param <R> the type of the result of the function
+ */
 @FunctionalInterface
-public interface CheckedFunction<T, R> {
-    R apply(T t) throws Throwable;
+public interface CheckedFunction<T, R> extends Function<T, R> {
+
+    /**
+     * Applies this function to the given argument.
+     *
+     * @param t the function argument
+     * @return the function result
+     * @throws Throwable if an exception occurs while performing
+     */
+    R use(T t) throws Throwable;
+
+    /**
+     * {@inheritDoc}
+     * Invokes {@link #use(Object)} wrapping any thrown catched exception with {@code RuntimeException}.
+     *
+     * @throws RuntimeException if an exception occurs while performing
+     */
+    @Override
+    @SneakyThrows
+    default R apply(T t) {
+        return use(t);
+    }
 }

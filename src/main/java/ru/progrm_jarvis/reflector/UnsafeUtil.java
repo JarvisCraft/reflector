@@ -17,15 +17,22 @@
 package ru.progrm_jarvis.reflector;
 
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import ru.progrm_jarvis.reflector.util.CheckedConsumer;
 import ru.progrm_jarvis.reflector.util.CheckedFunction;
 import sun.misc.Unsafe;
 
+/**
+ * An utility class to make access tu {@link Unsafe} simpler.
+ */
 @UtilityClass
 public class UnsafeUtil {
 
+    /**
+     * {@code public} instance of {@link Unsafe}
+     */
     public static Unsafe UNSAFE;
 
     static {
@@ -43,11 +50,23 @@ public class UnsafeUtil {
         }
     }
 
-    public void useUnsafe(@NonNull final CheckedConsumer<Unsafe> consumer) throws Throwable {
+    /**
+     * Uses {@link Unsafe} using consumer given.
+     *
+     * @param consumer consumer accepting unsafe
+     */
+    @SneakyThrows
+    public void useUnsafe(@NonNull final CheckedConsumer<Unsafe> consumer) {
         consumer.consume(UNSAFE);
     }
 
-    public <T> T useUnsafeAndGet(@NonNull final CheckedFunction<Unsafe, T> function) throws Throwable {
-        return function.apply(UNSAFE);
+    /**
+     * Uses {@link Unsafe} using function given returning operation's result.
+     *
+     * @param function accepting unsafe and returning result of operation performed
+     */
+    @SneakyThrows
+    public <T> T useUnsafeAndGet(@NonNull final CheckedFunction<Unsafe, T> function) {
+        return function.use(UNSAFE);
     }
 }
