@@ -164,21 +164,25 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return MethodWrapper.of(clazz.getMethod(name));
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final String name,
+                                                @NonNull final Class<?> parameterTypes) {
+        return MethodWrapper.of(clazz.getMethod(name, parameterTypes));
     }
 
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final String name) {
-        return getMethod(classOf(object), name);
+    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final String name,
+                                                @NonNull final Class<?> parameterTypes) {
+        return getMethod(classOf(object), name, parameterTypes);
     }
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return MethodWrapper.of(clazz.getDeclaredMethod(name));
+    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name,
+                                                        @NonNull final Class<?> parameterTypes) {
+        return MethodWrapper.of(clazz.getDeclaredMethod(name, parameterTypes));
     }
 
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final T object, @NonNull final String name) {
-        return getDeclaredMethod(classOf(object), name);
+    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final T object, @NonNull final String name,
+                                                        @NonNull final Class<?> parameterTypes) {
+        return getDeclaredMethod(classOf(object), name, parameterTypes);
     }
 
     public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Class<T> clazz,
