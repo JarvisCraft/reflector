@@ -17,7 +17,7 @@
 package ru.progrm_jarvis.reflector;
 
 import org.junit.jupiter.api.Test;
-import ru.progrm_jarvis.reflector.util.Possible;
+import ru.progrm_jarvis.reflector.util.ValueContainer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -27,46 +27,46 @@ public class RecursiveClassDiggerTest {
     @Test
     public void testDig() throws Throwable {
         assertEquals(Object3.class, RecursiveClassDigger.<Object3, Void, Throwable>dig(Object3.class,
-                clazz -> clazz.getSimpleName().equals("Object3") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Object3") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertEquals(Object2.class, RecursiveClassDigger.<Object3, Void, Throwable>dig(Object3.class,
-                clazz -> clazz.getSimpleName().equals("Object2") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Object2") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertNull(RecursiveClassDigger.<Object3, Void, Throwable>dig(Object3.class,
-                clazz -> clazz.getSimpleName().equals("SomeObject") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("SomeObject") ? ValueContainer.empty() : null, Object.class)
                 .orElse(null));
 
         assertNull(RecursiveClassDigger.<Object3, Void, Throwable>dig(Object3.class,
-                clazz -> clazz.getSimpleName().equals("Object1") ? Possible.empty() : null, Object2.class)
+                clazz -> clazz.getSimpleName().equals("Object1") ? ValueContainer.empty() : null, Object2.class)
                 .orElse(null));
     }
 
     @Test
     public void testDigWithInterfaces() throws Throwable {
         assertEquals(Object4.class, RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("Object4") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Object4") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertEquals(Interface2.class, RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("Interface2") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Interface2") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertEquals(Interface1.class, RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("Interface1") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Interface1") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertEquals(Interface3.class, RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("Interface3") ? Possible.empty() : null, Object.class)
+                clazz -> clazz.getSimpleName().equals("Interface3") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
 
         assertNull(RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("SomeInterface") ? Possible.empty() : null, Object2.class)
+                clazz -> clazz.getSimpleName().equals("SomeInterface") ? ValueContainer.empty() : null, Object2.class)
                 .orElse(null));
 
         assertNull(RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
-                clazz -> clazz.getSimpleName().equals("Interface1") ? Possible.empty() : null, Interface2.class)
+                clazz -> clazz.getSimpleName().equals("Interface1") ? ValueContainer.empty() : null, Interface2.class)
                 .orElse(null));
     }
 

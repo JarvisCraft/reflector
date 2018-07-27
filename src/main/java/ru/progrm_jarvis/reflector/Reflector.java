@@ -20,7 +20,7 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import ru.progrm_jarvis.reflector.util.Possible;
+import ru.progrm_jarvis.reflector.util.ValueContainer;
 import ru.progrm_jarvis.reflector.util.ThrowingFunction;
 import ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper;
 import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
@@ -44,46 +44,72 @@ public class Reflector {
     // Unwrapped
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Digs for constructor following the given condition in class specified and all its parents until the bound.
+     *
+     * @param clazz class from which to start the search
+     * @param condition condition by which to check each constructor
+     * @param bound bounding of class, the one after reaching of which digging ends (inclusive)
+     * @param <T> type of class being digged
+     * @return {@link Optional} of found constructor or {@link Optional#empty()} if none was found
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> Optional<ClassMember<? super T, Constructor<? super T>>> digForConstructor(
             @NonNull final Class<T> clazz,
-            @NonNull final Predicate<Constructor<? super T>> predicate,
+            @NonNull final Predicate<Constructor<? super T>> condition,
             @NonNull final Class<? super T> bound
     ) {
         return RecursiveClassDigger
-                .dig(clazz, (ThrowingFunction<Class<? super T>, Possible<Constructor<? super T>>, Throwable>) owner -> {
+                .dig(clazz, (ThrowingFunction<Class<? super T>, ValueContainer<Constructor<? super T>>, Throwable>) owner -> {
                         for (val constructor : owner.getDeclaredConstructors()) {
                             val genericConstructor = (Constructor<? super T>) constructor;
 
-                            if (predicate.test(genericConstructor)) return Possible.of(genericConstructor);
+                            if (condition.test(genericConstructor)) return ValueContainer.of(genericConstructor);
                         }
                     return null;
                 }, bound);
     }
 
+    /**
+     * Digs for field following the given condition in class specified and all its parents until the bound.
+     *
+     * @param clazz class from which to start the search
+     * @param condition condition by which to check each field
+     * @param bound bounding of class, the one after reaching of which digging ends (inclusive)
+     * @param <T> type of class being digged
+     * @return {@link Optional} of found field or {@link Optional#empty()} if none was found
+     */
     @SneakyThrows
     public <T> Optional<ClassMember<? super T, Field>> digForField(
             @NonNull final Class<T> clazz,
-            @NonNull final Predicate<Field> predicate,
+            @NonNull final Predicate<Field> condition,
             @NonNull final Class<? super T> bound
     ) {
         return RecursiveClassDigger
-                .dig(clazz, (ThrowingFunction<Class<? super T>, Possible<Field>, Throwable>) owner -> {
-                    for (val field : owner.getDeclaredFields()) if (predicate.test(field)) return Possible.of(field);
+                .dig(clazz, (ThrowingFunction<Class<? super T>, ValueContainer<Field>, Throwable>) owner -> {
+                    for (val field : owner.getDeclaredFields()) if (condition.test(field)) return ValueContainer.of(field);
                     return null;
                     }, bound);
     }
 
+    /**
+     * Digs for method following the given condition in class specified and all its parents until the bound.
+     *
+     * @param clazz class from which to start the search
+     * @param condition condition by which to check each method
+     * @param bound bounding of class, the one after reaching of which digging ends (inclusive)
+     * @return {@link Optional} of found method or {@link Optional#empty()} if none was found
+     */
     @SneakyThrows
     public Optional<ClassMember<?, Method>> digForMethod(
             @NonNull final Class<?> clazz,
-            @NonNull final Predicate<Method> predicate,
+            @NonNull final Predicate<Method> condition,
             @NonNull final Class<?> bound
     ) {
         return RecursiveClassDigger
-                .digWithInterfaces(clazz, (ThrowingFunction<Class<?>, Possible<Method>, Throwable>) owner -> {
-                    for (val method : owner.getDeclaredMethods()) if (predicate.test(method)) return Possible
+                .digWithInterfaces(clazz, (ThrowingFunction<Class<?>, ValueContainer<Method>, Throwable>) owner -> {
+                    for (val method : owner.getDeclaredMethods()) if (condition.test(method)) return ValueContainer
                             .of(method);
                     return null;
                     }, bound);
@@ -93,12 +119,26 @@ public class Reflector {
     // Class
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Gets the type-safe class object by its fully qualified name.
+     *
+     * @param className the fully qualified name of class (<i><b>PACKAGE</b>.<b>NAME</b></i>)
+     * @param <T> type of class
+     * @return class found by its fully qualified name
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> Class<T> classForName(@NonNull final String className) {
         return (Class<T>) Class.forName(className);
     }
 
+    /**
+     * Returns a type-safe class instance from object specified.
+     *
+     * @param object object of which to get class
+     * @param <T> type of object and so its class
+     * @return type-safe class instance of object
+     */
     @SuppressWarnings("unchecked")
     public <T> Class<T> classOf(@NonNull final T object) {
         return (Class<T>) object.getClass();
@@ -108,20 +148,58 @@ public class Reflector {
     // Wrapped field
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Gets field wrapper for class's field available via {@link Class#getField(String)} in the class specified.
+     *
+     * @param clazz class in which to look for field
+     * @param name name of field to get
+     * @param <T> type of class containing field
+     * @param <R> type of field value
+     * @return field wrapper for object's field
+     */
     @SneakyThrows
     public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return FieldWrapper.of(clazz.getField(name));
     }
 
+    /**
+     * Gets field wrapper for class's field available
+     * via {@link Class#getField(String)}in the class of object specified.
+     *
+     * @param object object in whose class to look for field
+     * @param name name of field to get
+     * @param <T> type of class containing field
+     * @param <R> type of field value
+     * @return field wrapper for object's field
+     */
     public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final String name) {
         return getField(classOf(object), name);
     }
 
+    /**
+     * Gets field wrapper for class's field available via {@link Class#getDeclaredField(String)} in the class specified.
+     *
+     * @param clazz class in which to look for field
+     * @param name name of field to get
+     * @param <T> type of class containing field
+     * @param <R> type of field value
+     * @return field wrapper for object's field
+     */
     @SneakyThrows
     public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return FieldWrapper.of(clazz.getDeclaredField(name));
     }
 
+    /**
+     * Gets field wrapper for class's field available
+     * via {@link Class#getDeclaredField(String)}in the class of object specified.
+     *
+     * @param object object in whose class to look for field
+     * @param name name of field to get
+     * @param <T> type of class containing field
+     * @param <R> type of field value
+     * @return field wrapper for object's field
+     */
     public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final T object, @NonNull final String name) {
         return getDeclaredField(classOf(object), name);
     }
@@ -295,6 +373,13 @@ public class Reflector {
     // Unsafe
     ///////////////////////////////////////////////////////////////////////////
 
+    /**
+     * Allocates new instance using {@link sun.misc.Unsafe} so that its constructor is not invoked.
+     *
+     * @param clazz class instance of which to create
+     * @param <T> type of object
+     * @return newly allocated instance of class
+     */
     @SneakyThrows
     @SuppressWarnings("unchecked")
     public <T> T newUnsafeInstance(@NonNull final Class<T> clazz) {

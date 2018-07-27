@@ -20,7 +20,7 @@ import lombok.NonNull;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
-import ru.progrm_jarvis.reflector.util.Possible;
+import ru.progrm_jarvis.reflector.util.ValueContainer;
 import ru.progrm_jarvis.reflector.util.ThrowingFunction;
 
 import java.util.Optional;
@@ -31,7 +31,7 @@ public class RecursiveClassDigger {
 
     public <T, R, E extends Throwable> Optional<ClassMember<? super T, R>> dig(
             @NonNull final Class<? super T> clazz,
-            @NonNull final ThrowingFunction<Class<? super T>, Possible<R>, E> digger,
+            @NonNull final ThrowingFunction<Class<? super T>, ValueContainer<R>, E> digger,
             @Nullable final Class<? super T> bound
     ) throws E {
         // try find in clazz
@@ -50,7 +50,7 @@ public class RecursiveClassDigger {
 
     public <R, E extends Throwable> Optional<ClassMember<?, R>> digWithInterfaces(
             @NonNull final Class<?> clazz,
-            @NonNull final ThrowingFunction<Class<?>, Possible<R>, E> digger,
+            @NonNull final ThrowingFunction<Class<?>, ValueContainer<R>, E> digger,
             @Nullable final Class<?> bound
     ) throws E {
         // try find in clazz

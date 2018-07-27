@@ -22,11 +22,11 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static ru.progrm_jarvis.reflector.AccessHelper.operate;
 
-public class AccessHelperTest {
+class AccessHelperTest {
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    public void testOperateField() throws Throwable {
+    void testOperateField() throws Throwable {
         val object = new Object1();
         operate(object.getClass().getDeclaredField("field"), field -> field.set(object, null));
         assertNull(object.field);
@@ -34,14 +34,14 @@ public class AccessHelperTest {
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    public void testOperateMethod() throws Throwable {
+    void testOperateMethod() throws Throwable {
         val object = new Object1();
         operate(object.getClass().getDeclaredMethod("foo"), method -> method.invoke(object));
     }
 
     @Test
     @SuppressWarnings("ConstantConditions")
-    public void testOperateConstructor() throws Throwable {
+    void testOperateConstructor() throws Throwable {
         operate(Object1.class.getDeclaredConstructor(), constructor -> constructor.newInstance());
     }
 

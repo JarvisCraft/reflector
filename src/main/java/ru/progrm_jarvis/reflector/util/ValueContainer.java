@@ -19,19 +19,31 @@ package ru.progrm_jarvis.reflector.util;
 import lombok.Value;
 
 /**
- * An immutable value container which
+ * An immutable value container which may hold a value (including null).
  *
- * @param <T>
+ * @param <T> type of value stored
  */
 @Value(staticConstructor = "of")
-public class Possible<T> {
+public class ValueContainer<T> {
 
-    private static final Possible<?> EMPTY = new Possible<>(null);
+    /**
+     * Static instance of value container holding {@code null}
+     */
+    private static final ValueContainer<?> EMPTY = new ValueContainer<>(null);
 
+    /**
+     * Value of this container
+     */
     private T value;
 
+    /**
+     * Returns an empty value container without allocating any new space for it (as a static instance is always stored).
+     *
+     * @param <T> type of container
+     * @return empty value container (the one storing {@code null})
+     */
     @SuppressWarnings("unchecked")
-    public static <T> Possible<T> empty() {
-        return (Possible<T>) EMPTY;
+    public static <T> ValueContainer<T> empty() {
+        return (ValueContainer<T>) EMPTY;
     }
 }

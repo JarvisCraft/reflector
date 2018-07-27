@@ -25,9 +25,15 @@ import ru.progrm_jarvis.reflector.util.CheckedFunction;
 
 import java.lang.reflect.*;
 
+/**
+ * Utilities used for easier manipulation with reflection-related objects which have access restrictions.
+ */
 @UtilityClass
 public class AccessHelper {
 
+    /**
+     * {@code modifiers} field of {@link Field} class used for manipulating its flags
+     */
     private static final Field FIELD_MODIFIERS;
 
     static {
