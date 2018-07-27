@@ -34,7 +34,9 @@ import java.util.Optional;
 import java.util.function.Predicate;
 
 /**
- * Main reflector class which wraps {@link Class} methods with methods which don't throw checked exceptions.
+ * Main reflector class which wraps {@link Class} methods with methods which don't throw checked exceptions
+ *
+ * TODO: 27.07.2018 full documentation
  */
 @UtilityClass
 @SuppressWarnings({"unused", "WeakerAccess"})

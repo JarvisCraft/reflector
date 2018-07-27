@@ -15,6 +15,6 @@
  */
 
 /**
- * Contains wrappers for objects commonly used reflectively.
+ * Wrappers for objects commonly used reflectively
  */
 package ru.progrm_jarvis.reflector.wrapper;

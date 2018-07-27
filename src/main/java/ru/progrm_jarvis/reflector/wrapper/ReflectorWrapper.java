@@ -17,6 +17,6 @@
 package ru.progrm_jarvis.reflector.wrapper;
 
 /**
- * Super-interface for all reflector-wrappers.
+ * Super-interface for all reflector-wrappers
  */
 public interface ReflectorWrapper {}

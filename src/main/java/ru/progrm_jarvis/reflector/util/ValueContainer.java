@@ -19,7 +19,7 @@ package ru.progrm_jarvis.reflector.util;
 import lombok.Value;
 
 /**
- * An immutable value container which may hold a value (including null).
+ * An immutable value container which may hold a value (including null)
  *
  * @param <T> type of value stored
  */

@@ -27,12 +27,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 
 /**
- * Wrapper for {@link Field} to be used with Reflector.
+ * Wrapper for {@link Field} to be used with Reflector
+ *
+ * @param <T> type of class containing this field
+ * @param <V> type of value contained in this field
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class FieldWrapper<T, V> implements ReflectorWrapper {
 
+    /**
+     * Cache of field wrappers
+     */
     private static final Cache<Field, FieldWrapper<?, ?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
 
     /**

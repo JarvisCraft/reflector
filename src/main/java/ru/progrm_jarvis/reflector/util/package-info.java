@@ -15,6 +15,6 @@
  */
 
 /**
- * Utilities used by Reflector but not directly related to it.
+ * Utilities used by Reflector but not directly related to it
  */
 package ru.progrm_jarvis.reflector.util;

@@ -18,7 +18,7 @@ package ru.progrm_jarvis.reflector.util;
 
 /**
  * {@inheritDoc}
- * This is the same as normal {@code CheckedFunction} but its {@code Throwable} type is known at compile time.
+ * This is the same as normal {@code CheckedFunction} but its {@code Throwable} type is known at compile time
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result of the function
