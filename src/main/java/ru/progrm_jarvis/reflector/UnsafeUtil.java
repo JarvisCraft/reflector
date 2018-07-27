@@ -25,7 +25,7 @@ import ru.progrm_jarvis.reflector.util.CheckedFunction;
 import sun.misc.Unsafe;
 
 /**
- * An utility class to make access tu {@link Unsafe} simpler.
+ * An utility class to make access tu {@link Unsafe} simpler
  */
 @UtilityClass
 public class UnsafeUtil {
@@ -33,6 +33,7 @@ public class UnsafeUtil {
     /**
      * {@code public} instance of {@link Unsafe}
      */
+    @SuppressWarnings("WeakerAccess")
     public static Unsafe UNSAFE;
 
     static {
@@ -64,6 +65,8 @@ public class UnsafeUtil {
      * Uses {@link Unsafe} using function given returning operation's result.
      *
      * @param function accepting unsafe and returning result of operation performed
+     * @param <T> type of value returned by operation
+     * @return value obtained by invoking function
      */
     @SneakyThrows
     public <T> T useUnsafeAndGet(@NonNull final CheckedFunction<Unsafe, T> function) {

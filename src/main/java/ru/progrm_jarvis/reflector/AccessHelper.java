@@ -26,7 +26,7 @@ import ru.progrm_jarvis.reflector.util.CheckedFunction;
 import java.lang.reflect.*;
 
 /**
- * Utilities used for easier manipulation with reflection-related objects which have access restrictions.
+ * Utilities used for easier manipulation with reflection-related objects which have access restrictions
  */
 @UtilityClass
 public class AccessHelper {

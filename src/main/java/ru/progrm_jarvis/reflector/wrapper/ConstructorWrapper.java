@@ -25,13 +25,19 @@ import java.lang.reflect.Constructor;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Wrapper for {@link Constructor} to be used with Reflector.
+ * Wrapper for {@link Constructor} to be used with Reflector
+ *
+ * @param <T> type of class whose constructor it is
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ConstructorWrapper<T> implements ReflectorWrapper {
 
-    private static final Cache<Constructor<?>, ConstructorWrapper<?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
+    /**
+     * Cache of constructor wrappers
+     */
+    private static final Cache<Constructor<?>, ConstructorWrapper<?>> CACHE = CacheBuilder
+            .newBuilder().weakValues().build();
 
     /**
      * Actual constructor wrapped.

@@ -23,7 +23,7 @@ import java.util.function.Function;
 /**
  * {@inheritDoc}
  * This {@code Function} extension provides {@link #use(Object)} method
- * which is the same as {@link #apply(Object)} but is declared as {@code throws Throwable}.
+ * which is the same as {@link #apply(Object)} but is declared as {@code throws Throwable}
  *
  * @param <T> the type of the input to the function
  * @param <R> the type of the result of the function

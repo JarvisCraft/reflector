@@ -26,12 +26,18 @@ import java.lang.reflect.Method;
 import java.util.concurrent.ExecutionException;
 
 /**
- * Wrapper for {@link Method} to be used with Reflector.
+ * Wrapper for {@link Method} to be used with Reflector
+ *
+ * @param <T> type of class containing this method
+ * @param <R> type of value returned by this method
  */
 @Value
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class MethodWrapper<T, R> implements ReflectorWrapper {
 
+    /**
+     * Cache of method wrappers
+     */
     private static final Cache<Method, MethodWrapper<?, ?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
 
     /**

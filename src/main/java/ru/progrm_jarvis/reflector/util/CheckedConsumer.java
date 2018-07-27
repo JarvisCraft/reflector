@@ -23,7 +23,7 @@ import java.util.function.Consumer;
 /**
  * {@inheritDoc}
  * This {@code Consumer} extension provides {@link #consume(Object)} method
- * which is the same as {@link #accept(Object)} but is declared as {@code throws Throwable}.
+ * which is the same as {@link #accept(Object)} but is declared as {@code throws Throwable}
  *
  * @param <T> the type of the input to the operation
  */
