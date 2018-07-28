@@ -41,14 +41,11 @@ public class StringModifier {
         STRING_CLASS__VALUE_FIELD.setValue(string, value);
     }
     
-    public static char[] setStringBackend(final String string, final char[] value) {
+    public static char[] updateStringBackend(final String string, final char[] value) {
         return STRING_CLASS__VALUE_FIELD.updateValue(string, value);
     }
 }
 ```
-###### Note
->Although reflector is trying hard to be able to set values of fields ignoring access-limitations and `final` keyword,
-it is not able to change the value of `static final` field due to JVM limitation.
 ### Goals
 - [x] Develop core
 - [x] Configure Travis-CI
