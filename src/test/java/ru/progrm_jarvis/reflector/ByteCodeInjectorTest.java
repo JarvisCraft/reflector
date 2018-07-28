@@ -58,14 +58,47 @@ class ByteCodeInjectorTest {
 
     @Test
     void testInject() throws CannotCompileException {
-        val className = getClass().getTypeName().concat("$Foo");
-
-        classModifier.inject(className, new String[]{Bar.class.getTypeName()}, BarImpl.class.getTypeName())
+        classModifier.inject(getClass().getTypeName().concat("$Foo1"),
+                new String[]{Bar.class.getTypeName()}, BarImpl.class.getTypeName())
                 .toClass();
 
-        assertTrue(Bar.class.isAssignableFrom(Foo.class));
+        assertTrue(Bar.class.isAssignableFrom(Foo1.class));
+        assertEquals((byte) 123, ((Bar) new Foo1()).lol());
 
-        assertEquals((byte) 123, ((Bar) new Foo()).lol());
+        classModifier.inject(getClass().getTypeName().concat("$Foo2"),
+                new String[]{Bar.class.getTypeName(), Baz.class.getTypeName()},
+                BarImpl.class.getTypeName(), BazImpl.class.getTypeName())
+                .toClass();
+
+        assertTrue(Bar.class.isAssignableFrom(Foo2.class));
+        assertEquals((byte) 123, ((Bar) new Foo2()).lol());
+        assertEquals("xD", ((Baz) new Foo2()).lol());
+    }
+
+    @Test
+    void testInjectBuilder() throws CannotCompileException {
+        classModifier.injectionByNameBuilder()
+                .className(getClass().getTypeName().concat("$Foo3"))
+                .interfaceName(Bar.class.getTypeName())
+                .implementationName(BarImpl.class.getTypeName())
+                .inject()
+                .toClass();
+
+        assertTrue(Bar.class.isAssignableFrom(Foo3.class));
+        assertEquals((byte) 123, ((Bar) new Foo3()).lol());
+
+        classModifier.injectionByNameBuilder()
+                .className(getClass().getTypeName().concat("$Foo4"))
+                .interfaceName(Bar.class.getTypeName())
+                .interfaceName(Baz.class.getTypeName())
+                .implementationName(BarImpl.class.getTypeName())
+                .implementationName(BazImpl.class.getTypeName())
+                .inject()
+                .toClass();
+
+        assertTrue(Bar.class.isAssignableFrom(Foo4.class));
+        assertEquals((byte) 123, ((Bar) new Foo4()).lol());
+        assertEquals("xD", ((Baz) new Foo4()).lol());
     }
 
     private interface Bar {
@@ -79,5 +112,22 @@ class ByteCodeInjectorTest {
         }
     }
 
-    private static class Foo {}
+    private interface Baz {
+        String lol();
+    }
+
+    private static class BazImpl implements Baz {
+        @Override
+        public String lol() {
+            return "xD";
+        }
+    }
+
+    private static class Foo1 {}
+
+    private static class Foo2 {}
+
+    private static class Foo3 {}
+
+    private static class Foo4 {}
 }
