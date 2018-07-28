@@ -142,23 +142,20 @@ public class FieldWrapperTest {
             assertThrows(IllegalArgumentException.class, () -> field.setValue(instance, null));
         }
 
-        /*
-        //
-        // static final fields can not be modified due to JVM limitations (see inlining)
-        // so this sub-test behaves unexpectedly
-        //
         {
             val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("staticFinalStringField"));
 
+            field.setValue("lol");
+            assertEquals("lol", field.getValue());
+            field.setValue(null, "hi");
+            assertEquals("hi", field.getValue());
+            field.setValue(instance, "zzz");
+            assertEquals("zzz", field.getValue());
 
-            assertThrows(IllegalAccessException.class, () -> field.setValue("lol"));
-            assertThrows(IllegalAccessException.class, () -> field.setValue(null, "hi"));
-            assertThrows(IllegalAccessException.class, () -> field.setValue(instance, "zzz"));
-
-            assertThrows(IllegalAccessException.class, () -> field.setValue(0));
-            assertThrows(IllegalAccessException.class, () -> field.setValue(null, 0));
+            assertThrows(IllegalArgumentException.class, () -> field.setValue(0));
+            assertThrows(IllegalArgumentException.class, () -> field.setValue(null, 0));
+            assertThrows(IllegalArgumentException.class, () -> field.setValue(instance, 0));
         }
-        */
 
         {
             val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("objectField"));
