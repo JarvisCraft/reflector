@@ -2,6 +2,7 @@ package ru.progrm_jarvis.reflector;
 
 import javassist.ClassPool;
 import javassist.CtClass;
+import javassist.CtMethod;
 import javassist.CtNewMethod;
 import lombok.*;
 import lombok.experimental.Delegate;
@@ -27,6 +28,11 @@ public class ByteCodeInjector {
         return new ByteCodeInjector(ClassPool.getDefault());
     }
 
+    @SneakyThrows
+    public void copyMethod(@NonNull final CtMethod ctMethod, @NonNull final CtClass ctClass) {
+        ctClass.addMethod(CtNewMethod.copy(ctMethod, ctClass, null));
+    }
+
     /**
      * Implements all given interfaces in class specified using those classes which do also implement them.
      *
@@ -42,15 +48,32 @@ public class ByteCodeInjector {
         ctClass.setInterfaces(ctInterfaces);
         // copy methods
         // check each method in each implementation
-        for (val ctImplementation : ctImplementations) for (val ctMethod : ctImplementation.getDeclaredMethods()) {
-            methodCheck: // check whether method belongs to one of interfaces
-            for (val implementedInterface : ctMethod.getDeclaringClass().getInterfaces()) for (val ctInterface
-                    : ctInterfaces) if (implementedInterface == ctInterface) {
+        for (val ctImplementation : ctImplementations) methodAdding:
+                for (val ctMethod : ctImplementation.getDeclaredMethods()) {
+            // check whether method belongs to one of interfaces
+            val declaringClass = ctMethod.getDeclaringClass();
+            CtClass[] implementedInterfaces = null;
+
+            for (val ctInterface : ctInterfaces) {
+                if (ctInterface == declaringClass) {
                     // add method copy setting declaring class to the one updated
-                    ctClass.addMethod(CtNewMethod.copy(ctMethod, ctClass, null));
+                    copyMethod(ctMethod, ctClass);
+
                     // don't continue check as the class declaring this method have already been found
-                    break methodCheck;
+                    continue methodAdding;
+                } else {
+                    if (implementedInterfaces == null) implementedInterfaces = ctMethod.getDeclaringClass()
+                            .getInterfaces();
+
+                    for (val implementedInterface : implementedInterfaces) if (implementedInterface == ctInterface) {
+                        // add method copy setting declaring class to the one updated
+                        copyMethod(ctMethod, ctClass);
+
+                        // don't continue check as the class declaring this method have already been found
+                        continue methodAdding;
+                    }
                 }
+            }
         }
 
         return ctClass;
