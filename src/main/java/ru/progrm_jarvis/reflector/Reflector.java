@@ -16,12 +16,17 @@
 
 package ru.progrm_jarvis.reflector;
 
+import com.sun.org.apache.bcel.internal.generic.ClassGen;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import ru.progrm_jarvis.reflector.util.ValueContainer;
 import ru.progrm_jarvis.reflector.util.ThrowingFunction;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.AsmClassGenerator;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassDefiner;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassGenerator;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.SafeClassDefiner;
 import ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper;
 import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
 import ru.progrm_jarvis.reflector.wrapper.MethodWrapper;
@@ -71,6 +76,14 @@ public class Reflector {
                         }
                     return null;
                 }, bound);
+    }
+
+    public ClassGenerator newAsmClassGenerator(){
+        return newAsmClassGenerator(SafeClassDefiner.getInstance(), null);
+    }
+
+    public ClassGenerator newAsmClassGenerator(@NonNull ClassDefiner classDefiner, ClassLoader classLoader){
+        return new AsmClassGenerator(classDefiner, classLoader);
     }
 
     /**

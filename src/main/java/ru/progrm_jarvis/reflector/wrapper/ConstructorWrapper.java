@@ -23,14 +23,16 @@ import ru.progrm_jarvis.reflector.AccessHelper;
 
 import java.lang.reflect.Constructor;
 import java.util.concurrent.ExecutionException;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassGenerator;
+import ru.progrm_jarvis.reflector.util.emptyconstructor.EmptyConstructorCreator;
 
 /**
  * Wrapper for {@link Constructor} to be used with Reflector
  *
  * @param <T> type of class whose constructor it is
  */
-@Value
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+//@Value
+@RequiredArgsConstructor
 public class ConstructorWrapper<T> implements ReflectorWrapper {
 
     /**
@@ -42,10 +44,17 @@ public class ConstructorWrapper<T> implements ReflectorWrapper {
     /**
      * Actual constructor wrapped.
      */
-    @NonNull private Constructor<T> constructor;
+    @NonNull
+    private final Constructor<T> constructor;
 
     /**
-     * Creates new constructor wrapper instance for the field given or gets it from cache if one already exists.
+     * Uses for creating new instance without invoking constructor.
+     */
+    private EmptyConstructorCreator emptyConstructorCreator;
+
+    /**
+     * Creates new constructor wrapper instance for the field given or gets it from cache if one
+     * already exists.
      *
      * @param constructor constructor to get wrapped
      * @param <T> type of object which's constructor is invoked
@@ -54,20 +63,32 @@ public class ConstructorWrapper<T> implements ReflectorWrapper {
     @SuppressWarnings("unchecked")
     public static <T> ConstructorWrapper<T> of(@NonNull final Constructor<T> constructor) {
         try {
-            return ((ConstructorWrapper<T>) CACHE.get(constructor, () -> new ConstructorWrapper<>(constructor)));
+            return ((ConstructorWrapper<T>) CACHE
+                    .get(constructor, () -> new ConstructorWrapper<>(constructor)));
         } catch (final ExecutionException e) {
             throw new RuntimeException("Could not obtain ConstructorWrapper<T> value from cache");
         }
     }
 
     /**
-     * Creates new instance of this object by invoking it's constructor wrapped ignoring any limitations if possible.
+     * Creates new instance of this object by invoking it's constructor wrapped ignoring any
+     * limitations if possible.
      *
      * @param arguments arguments to be passed to constructor
      * @return object instantiated using constructor
      */
     @SneakyThrows
     public T construct(@NonNull final Object... arguments) {
-        return AccessHelper.accessAndGet(constructor, constructor -> constructor.newInstance(arguments));
+        return AccessHelper
+                .accessAndGet(constructor, constructor -> constructor.newInstance(arguments));
+    }
+
+    @SneakyThrows
+    public T constructUsingMagic(@NonNull ClassGenerator classGenerator) {
+        if (this.emptyConstructorCreator == null) {
+            this.emptyConstructorCreator = classGenerator
+                    .newClassInstanceManipulator(constructor.getDeclaringClass());
+        }
+        return (T) this.emptyConstructorCreator.newInstance();
     }
 }
