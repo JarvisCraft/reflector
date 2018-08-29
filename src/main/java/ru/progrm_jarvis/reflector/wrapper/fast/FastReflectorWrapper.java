@@ -14,13 +14,16 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.wrapper.fast;
+
+import ru.progrm_jarvis.reflector.wrapper.ReflectorWrapper;
+
 
 /**
- * Super-interface for all reflector-wrappers
+ * A fast {@link ReflectorWrapper} implementation for direct access to reflection-related objects
+ * without performing any access checks.
+ *
+ * @see java.lang.invoke.MethodHandle
  */
-@SuppressWarnings("unused") // T in case it is needed
-public interface ReflectorWrapper<T> {
-
-    T getWrappedValue();
+public interface FastReflectorWrapper<T> extends ReflectorWrapper<T> {
 }

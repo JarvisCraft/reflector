@@ -3,7 +3,7 @@
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
- *    You may obtain a copy testOf the License at
+ *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,44 +18,45 @@ package ru.progrm_jarvis.reflector.wrapper;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import ru.progrm_jarvis.reflector.wrapper.reflection.ReflectionFieldWrapper;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.progrm_jarvis.reflector.wrapper.FieldWrapper.of;
+import static ru.progrm_jarvis.reflector.wrapper.reflection.ReflectionFieldWrapper.from;
 
-public class FieldWrapperTest {
+class ReflectionFieldWrapperTest {
 
     @Test
     public void testOf() throws NoSuchFieldException {
-        assertThrows(NullPointerException.class, () -> of(null));
+        assertThrows(NullPointerException.class, () -> from(null));
 
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("staticObjectField")));
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("staticIntField")));
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("staticFinalStringField")));
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("objectField")));
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("intField")));
-        assertNotNull(of(PrivateStaticClass_GetTest.class.getDeclaredField("finalStringField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("staticObjectField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("staticIntField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("staticFinalStringField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("objectField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("intField")));
+        assertNotNull(from(PrivateStaticClass_GetTest.class.getDeclaredField("finalStringField")));
 
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("staticObjectField")));
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("staticIntField")));
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("staticFinalStringField")));
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("objectField")));
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("intField")));
-        assertNotNull(of(PrivateStaticClass_SetTest.class.getDeclaredField("finalStringField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("staticObjectField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("staticIntField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("staticFinalStringField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("objectField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("intField")));
+        assertNotNull(from(PrivateStaticClass_SetTest.class.getDeclaredField("finalStringField")));
 
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("intField")));
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("finalIntField")));
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("staticIntField")));
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("stringField")));
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("finalStringField")));
-        assertNotNull(of(PrivateStaticClass_UpdateTest.class.getDeclaredField("staticStringField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("intField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("finalIntField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("staticIntField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("stringField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("finalStringField")));
+        assertNotNull(from(PrivateStaticClass_UpdateTest.class.getDeclaredField("staticStringField")));
     }
 
     @Test
-    public void testGetValue() throws NoSuchFieldException {
+    void testGetValue() throws NoSuchFieldException {
         val instance = new PrivateStaticClass_GetTest();
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("staticObjectField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("staticObjectField"));
 
             assertEquals('a', field.getValue());
             assertEquals('a', field.getValue(null));
@@ -63,7 +64,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("staticIntField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("staticIntField"));
 
             assertEquals(0, field.getValue());
             assertEquals(0, field.getValue(null));
@@ -71,7 +72,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("staticFinalStringField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("staticFinalStringField"));
 
             assertEquals("hello", field.getValue());
             assertEquals("hello", field.getValue(null));
@@ -79,7 +80,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("objectField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("objectField"));
 
             assertThrows(NullPointerException.class, field::getValue);
             assertThrows(NullPointerException.class, () -> field.getValue(null));
@@ -87,7 +88,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("intField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("intField"));
 
             assertThrows(NullPointerException.class, field::getValue);
             assertThrows(NullPointerException.class, () -> field.getValue(null));
@@ -95,7 +96,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_GetTest.class.getDeclaredField("finalStringField"));
+            val field = from(PrivateStaticClass_GetTest.class.getDeclaredField("finalStringField"));
 
             assertThrows(NullPointerException.class, field::getValue);
             assertThrows(NullPointerException.class, () -> field.getValue(null));
@@ -104,11 +105,11 @@ public class FieldWrapperTest {
     }
 
     @Test
-    public void testSetValue() throws NoSuchFieldException {
+    void testSetValue() throws NoSuchFieldException {
         val instance = new PrivateStaticClass_SetTest();
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("staticObjectField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("staticObjectField"));
 
             field.setValue(null, "hi");
             assertEquals("hi", field.getValue());
@@ -124,7 +125,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("staticIntField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("staticIntField"));
 
             field.setValue(null, 8);
             assertEquals(8, field.getValue());
@@ -143,7 +144,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("staticFinalStringField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("staticFinalStringField"));
 
             field.setValue("lol");
             assertEquals("lol", field.getValue());
@@ -158,7 +159,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("objectField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("objectField"));
 
             assertThrows(NullPointerException.class, () -> field.setValue(null, "hi"));
 
@@ -172,7 +173,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("intField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("intField"));
 
             assertThrows(NullPointerException.class, () -> field.setValue(null, 8));
 
@@ -189,7 +190,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = of(PrivateStaticClass_SetTest.class.getDeclaredField("finalStringField"));
+            val field = from(PrivateStaticClass_SetTest.class.getDeclaredField("finalStringField"));
 
             assertThrows(NullPointerException.class, () -> field.setValue("lol"));
 
@@ -208,10 +209,10 @@ public class FieldWrapperTest {
     }
 
     @Test
-    public void testUpdateValue() throws NoSuchFieldException {
+    void testUpdateValue() throws NoSuchFieldException {
         val instance = new PrivateStaticClass_UpdateTest();
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, Integer>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("intField")
             );
             assertThrows(NullPointerException.class, () -> field.updateValue(2));
@@ -226,7 +227,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, Integer>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("finalIntField")
             );
             assertThrows(NullPointerException.class, () -> field.updateValue(2));
@@ -241,7 +242,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, Integer>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("staticIntField")
             );
             assertEquals(0, (int) field.updateValue(2));
@@ -265,7 +266,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, String>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("stringField")
             );
             assertThrows(NullPointerException.class, () -> field.updateValue("q"));
@@ -281,7 +282,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, String>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("finalStringField")
             );
             assertThrows(NullPointerException.class, () -> field.updateValue("q"));
@@ -298,7 +299,7 @@ public class FieldWrapperTest {
         }
 
         {
-            val field = FieldWrapper.<PrivateStaticClass_UpdateTest, String>of(
+            val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("staticStringField")
             );
             assertEquals("hi", field.updateValue("one"));

@@ -8,13 +8,16 @@ import lombok.val;
 import org.junit.jupiter.api.Test;
 
 import java.io.Serializable;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.progrm_jarvis.reflector.ByteCodeInjector.create;
 
-class ByteCodeInjectorTest {
+class BytecodeHelperTest {
 
-    private final ByteCodeInjector classModifier = create();
+    /* todo
+    private final BytecodeHelper bytecodeHelper = create();
+    private static final String CLASSNAME_PREFIX = BytecodeHelperTest.class.getTypeName().concat("$");
 
     @Test
     void testCreate() {
@@ -25,12 +28,12 @@ class ByteCodeInjectorTest {
 
     @Test
     void testPoolMemberEquality() throws NotFoundException {
-        assertSame(classModifier.get("java.lang.String"), classModifier.get("java.lang.String"));
+        assertSame(bytecodeHelper.get("java.lang.String"), bytecodeHelper.get("java.lang.String"));
         {
             final CtClass
-                    foo1 = classModifier.makeClass("$$$MyFooClass"),
-                    foo2 = classModifier.makeClass("$$$MyFooClass"),
-                    bar = classModifier.makeClass("$$$MyBarClass");
+                    foo1 = bytecodeHelper.makeClass("$$$MyFooClass"),
+                    foo2 = bytecodeHelper.makeClass("$$$MyFooClass"),
+                    bar = bytecodeHelper.makeClass("$$$MyBarClass");
             assertNotSame(foo1, foo2);
             assertNotEquals(foo1, bar);
             assertNotEquals(foo2, bar);
@@ -44,8 +47,8 @@ class ByteCodeInjectorTest {
 
         val className = "$$lorem.ipsum.dolem.petya.Foo".concat(Long.toString((long) (Long.MAX_VALUE * Math.random())));
 
-        val ctClass = classModifier.makeClass(className);
-        ctClass.addInterface(classModifier.get(Serializable.class.getCanonicalName()));
+        val ctClass = bytecodeHelper.makeClass(className);
+        ctClass.addInterface(bytecodeHelper.get(Serializable.class.getCanonicalName()));
         ctClass.toClass();
 
         val clazz = Class.forName(className);
@@ -58,13 +61,13 @@ class ByteCodeInjectorTest {
 
     @Test
     void testInject() throws CannotCompileException {
-        classModifier.inject(getClass().getTypeName().concat("$Foo1"),
+        bytecodeHelper.inject(CLASSNAME_PREFIX.concat("Foo1"), true,
                 new String[]{Bar.class.getTypeName()}, BarImpl.class.getTypeName())
                 .toClass();
         assertTrue(Bar.class.isAssignableFrom(Foo1.class));
         assertEquals((byte) 123, ((Bar) new Foo1()).lol());
 
-        classModifier.inject(getClass().getTypeName().concat("$Foo2"),
+        bytecodeHelper.inject(CLASSNAME_PREFIX.concat("Foo2"), true,
                 new String[]{Bar.class.getTypeName(), Baz.class.getTypeName()},
                 BarImpl.class.getTypeName(), BazImpl.class.getTypeName())
                 .toClass();
@@ -75,8 +78,8 @@ class ByteCodeInjectorTest {
 
     @Test
     void testInjectBuilder() throws CannotCompileException {
-        classModifier.injectionByNameBuilder()
-                .className(getClass().getTypeName().concat("$Foo3"))
+        bytecodeHelper.injectionByNameBuilder()
+                .className(CLASSNAME_PREFIX.concat("Foo3"))
                 .interfaceName(Bar.class.getTypeName())
                 .implementationName(BarImpl.class.getTypeName())
                 .inject()
@@ -84,8 +87,8 @@ class ByteCodeInjectorTest {
         assertTrue(Bar.class.isAssignableFrom(Foo3.class));
         assertEquals((byte) 123, ((Bar) new Foo3()).lol());
 
-        classModifier.injectionByNameBuilder()
-                .className(getClass().getTypeName().concat("$Foo4"))
+        bytecodeHelper.injectionByNameBuilder()
+                .className(CLASSNAME_PREFIX.concat("Foo4"))
                 .interfaceName(Bar.class.getTypeName())
                 .interfaceName(Baz.class.getTypeName())
                 .implementationName(BarImpl.class.getTypeName())
@@ -99,18 +102,56 @@ class ByteCodeInjectorTest {
 
     @Test
     void testInjectInterfaces() throws CannotCompileException {
-        classModifier.inject(getClass().getTypeName().concat("$FooI1"),
+        bytecodeHelper.inject(CLASSNAME_PREFIX.concat("FooI1"), true,
                 new String[]{Lel.class.getTypeName()}, Lel.class.getTypeName())
                 .toClass();
         assertTrue(Lel.class.isAssignableFrom(FooI1.class));
         assertEquals(1337, ((Lel) new FooI1()).meme());
 
-        classModifier.inject(getClass().getTypeName().concat("$FooI2"),
+        bytecodeHelper.inject(CLASSNAME_PREFIX.concat("FooI2"), true,
                 new String[]{Lel2.class.getTypeName()}, Lel2.class.getTypeName())
                 .toClass();
         assertTrue(Lel.class.isAssignableFrom(FooI2.class));
         assertEquals(1337, ((Lel) new FooI2()).meme());
         assertEquals(228, ((Lel2) new FooI2()).meme2());
+    }
+
+    @Test
+    void testInjectInterfacesWithFields() throws CannotCompileException, NoSuchFieldException, NoSuchMethodException,
+            InvocationTargetException, IllegalAccessException {
+        val emptyClass = bytecodeHelper.injectionByNameBuilder()
+                .className(CLASSNAME_PREFIX.concat("EmptyClass"))
+                .interfaceName(Lox.class.getTypeName())
+                .implementationName(LoxImpl.class.getTypeName())
+                .copyFields(true)
+                .inject()
+                .toClass();
+        assertNotNull(emptyClass);
+        System.out.println();
+
+        val emptyClassInstance = new EmptyClass();
+        assertSame(emptyClass, emptyClassInstance.getClass());
+        val sField = emptyClass.getDeclaredField("s");
+        assertNotNull(sField);
+        assertTrue(Modifier.isPrivate(sField.getModifiers()));
+        assertThrows(IllegalAccessException.class, () -> sField.get("hahaha"));
+
+        val getMethod = emptyClass.getDeclaredMethod("getS");
+        assertNotNull(getMethod);
+        val setMethod = emptyClass.getDeclaredMethod("setS", String.class);
+        assertNotNull(setMethod);
+
+        sField.setAccessible(true);
+        {
+            val fieldValue = sField.get(emptyClassInstance); // put in separate statement to check accessibility
+            assertEquals(fieldValue, getMethod.invoke(emptyClassInstance));
+        }
+        assertEquals("<3", getMethod.invoke(emptyClassInstance));
+
+        setMethod.invoke(emptyClassInstance, ":)");
+
+        assertEquals(sField.get(emptyClassInstance), getMethod.invoke(emptyClassInstance));
+        assertEquals(":)", getMethod.invoke(emptyClassInstance));
     }
 
     private interface Bar {
@@ -158,4 +199,36 @@ class ByteCodeInjectorTest {
     private static class Foo3 {}
 
     private static class Foo4 {}
+
+    private interface Lox {
+
+        void setS(final String s);
+        String getS();
+    }
+
+    static class SomeObj {}
+
+    private static abstract class LoxImpl implements Lox {
+        private String s = "<3";
+        private int num = 0xFF;
+        private SomeObj obj = new SomeObj();
+        private long l = 127;
+
+        public LoxImpl() {
+            l = -127;
+        }
+
+        @Override
+        public String getS() {
+            return s;
+        }
+
+        @Override
+        public void setS(final String s) {
+            this.s = s;
+        }
+    }
+
+    private static final class EmptyClass {}
+    */
 }

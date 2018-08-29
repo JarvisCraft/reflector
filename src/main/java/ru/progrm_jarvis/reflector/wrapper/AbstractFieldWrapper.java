@@ -16,11 +16,22 @@
 
 package ru.progrm_jarvis.reflector.wrapper;
 
-/**
- * Super-interface for all reflector-wrappers
- */
-@SuppressWarnings("unused") // T in case it is needed
-public interface ReflectorWrapper<T> {
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-    T getWrappedValue();
+import java.lang.reflect.Field;
+
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class AbstractFieldWrapper<T, V> implements FieldWrapper<T, V> {
+
+    protected final Field field;
+
+    @Override
+    public Field getWrappedValue() {
+        return field;
+    }
 }

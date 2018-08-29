@@ -14,13 +14,18 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.util;
 
-/**
- * Super-interface for all reflector-wrappers
- */
-@SuppressWarnings("unused") // T in case it is needed
-public interface ReflectorWrapper<T> {
+import lombok.SneakyThrows;
+import lombok.experimental.NonFinal;
+import lombok.experimental.UtilityClass;
+import ru.progrm_jarvis.reflector.util.function.CheckedSupplier;
 
-    T getWrappedValue();
+@UtilityClass
+public class ThrowableUtil {
+
+    @SneakyThrows
+    public <T> T executeChecked(@NonFinal final CheckedSupplier<T> checkedSupplier) {
+        return checkedSupplier.supply();
+    }
 }

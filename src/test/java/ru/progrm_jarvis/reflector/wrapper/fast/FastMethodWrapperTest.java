@@ -14,24 +14,27 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.util;
+package ru.progrm_jarvis.reflector.wrapper.fast;
 
-/**
- * {@inheritDoc}
- * This is the same as normal {@code CheckedFunction} but its {@code Throwable} type is known at compile time
- *
- * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
- * @param <E> the type of the exception to be declared as checked
- */
-@FunctionalInterface
-public interface ThrowingFunction<T, R, E extends Throwable> extends CheckedFunction<T, R> {
+import lombok.val;
+import org.junit.jupiter.api.Test;
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws E if an exception occurs while performing
-     */
-    @Override
-    R use(T t) throws E;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class FastMethodWrapperTest {
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testInvoke() throws NoSuchMethodException {
+        val fooFooMethod = FastMethodWrapper.<Foo, Integer>from(Foo.class.getDeclaredMethod("foo"));
+
+        assertEquals(1, fooFooMethod.invoke(new Foo()).intValue());
+
+    }
+
+    private static class Foo {
+        private int foo() {
+            return 1;
+        }
+    }
 }

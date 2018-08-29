@@ -23,15 +23,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static ru.progrm_jarvis.reflector.UnsafeUtil.useUnsafeAndGet;
 
-public class UnsafeUtilTest {
+class UnsafeUtilTest {
 
     @Test
-    public void testUseUnsafeAndGet() throws Throwable {
+    void testUseUnsafeAndGet() throws Throwable {
         assertNotEquals(new Object1(), useUnsafeAndGet(unsafe -> unsafe.allocateInstance(Object1.class)));
         assertEquals(0, ((Object1) useUnsafeAndGet(unsafe -> unsafe.allocateInstance(Object1.class))).value);
     }
     @Test
-    public void testUseUnsafe() throws Throwable {
+    void testUseUnsafe() throws Throwable {
         // TODO: 04.06.2018
     }
 

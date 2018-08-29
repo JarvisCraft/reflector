@@ -16,20 +16,22 @@
 
 package ru.progrm_jarvis.reflector;
 
-import com.sun.org.apache.bcel.internal.generic.ClassGen;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import ru.progrm_jarvis.reflector.util.ValueContainer;
-import ru.progrm_jarvis.reflector.util.ThrowingFunction;
 import ru.progrm_jarvis.reflector.util.emptyconstructor.AsmClassGenerator;
 import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassDefiner;
 import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassGenerator;
 import ru.progrm_jarvis.reflector.util.emptyconstructor.SafeClassDefiner;
+import ru.progrm_jarvis.reflector.util.function.ThrowingFunction;
 import ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper;
 import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
 import ru.progrm_jarvis.reflector.wrapper.MethodWrapper;
+import ru.progrm_jarvis.reflector.wrapper.fast.FastConstructorWrapper;
+import ru.progrm_jarvis.reflector.wrapper.fast.FastFieldWrapper;
+import ru.progrm_jarvis.reflector.wrapper.fast.FastMethodWrapper;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -174,7 +176,7 @@ public class Reflector {
      */
     @SneakyThrows
     public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return FieldWrapper.of(clazz.getField(name));
+        return FastFieldWrapper.from(clazz.getField(name));
     }
 
     /**
@@ -202,7 +204,7 @@ public class Reflector {
      */
     @SneakyThrows
     public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return FieldWrapper.of(clazz.getDeclaredField(name));
+        return FastFieldWrapper.from(clazz.getDeclaredField(name));
     }
 
     /**
@@ -220,7 +222,7 @@ public class Reflector {
     }
 
     public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
-        return digForField(clazz, predicate, Object.class).map(member -> FieldWrapper.of(member.getValue()));
+        return digForField(clazz, predicate, Object.class).map(member -> FastFieldWrapper.from(member.getValue()));
     }
 
     public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
@@ -229,7 +231,8 @@ public class Reflector {
 
     @SuppressWarnings("ConstantConditions")
     public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
-        return FieldWrapper.of(digForField(clazz, predicate, Object.class).get().getValue());
+        return FastFieldWrapper.from(digForField(clazz, predicate, Object.class)
+                .orElseThrow(NullPointerException::new).getValue());
     }
 
     public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
@@ -259,7 +262,7 @@ public class Reflector {
     @SneakyThrows
     public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final String name,
                                                 @NonNull final Class<?>... parameterTypes) {
-        return MethodWrapper.of(clazz.getMethod(name, parameterTypes));
+        return FastMethodWrapper.from(clazz.getMethod(name, parameterTypes));
     }
 
     public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final String name,
@@ -270,7 +273,7 @@ public class Reflector {
     @SneakyThrows
     public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name,
                                                         @NonNull final Class<?>... parameterTypes) {
-        return MethodWrapper.of(clazz.getDeclaredMethod(name, parameterTypes));
+        return FastMethodWrapper.from(clazz.getDeclaredMethod(name, parameterTypes));
     }
 
     public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final T object, @NonNull final String name,
@@ -280,7 +283,7 @@ public class Reflector {
 
     public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Class<T> clazz,
                                                                   @NonNull final Predicate<Method> predicate) {
-        return digForMethod(clazz, predicate, Object.class).map(member -> MethodWrapper.of(member.getValue()));
+        return digForMethod(clazz, predicate, Object.class).map(member -> FastMethodWrapper.from(member.getValue()));
     }
 
     public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final T object,
@@ -290,7 +293,8 @@ public class Reflector {
 
     @SuppressWarnings("ConstantConditions")
     public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final Predicate<Method> predicate) {
-        return MethodWrapper.of(digForMethod(clazz, predicate, Object.class).get().getValue());
+        return FastMethodWrapper.from(digForMethod(clazz, predicate, Object.class)
+                .orElseThrow(NullPointerException::new).getValue());
     }
 
     public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final Predicate<Method> predicate) {
@@ -320,7 +324,7 @@ public class Reflector {
     @SneakyThrows
     public <T> ConstructorWrapper<? extends T> getConstructor(@NonNull final Class<T> clazz,
                                                               @NonNull final Class<?>... parameterTypes) {
-        return ConstructorWrapper.of(clazz.getConstructor(parameterTypes));
+        return FastConstructorWrapper.from(clazz.getConstructor(parameterTypes));
     }
 
     public <T> ConstructorWrapper<? extends T> getConstructor(@NonNull final T object,
@@ -331,7 +335,7 @@ public class Reflector {
     @SneakyThrows
     public <T> ConstructorWrapper<? extends T> getDeclaredConstructor(@NonNull final Class<T> clazz,
                                                                       @NonNull final Class<?>... parameterTypes) {
-        return ConstructorWrapper.of(clazz.getDeclaredConstructor(parameterTypes));
+        return FastConstructorWrapper.from(clazz.getDeclaredConstructor(parameterTypes));
     }
 
     public <T> ConstructorWrapper<? extends T> getDeclaredConstructor(@NonNull final T object,
@@ -342,7 +346,7 @@ public class Reflector {
     public <T> Optional<ConstructorWrapper<? super T>> getConstructorOptional(@NonNull final Class<T> clazz,
                                                                               @NonNull final Predicate<Constructor<? super T>>
                                                                         predicate) {
-        return digForConstructor(clazz, predicate, Object.class).map(member -> ConstructorWrapper.of(member.getValue()));
+        return digForConstructor(clazz, predicate, Object.class).map(member -> FastConstructorWrapper.from(member.getValue()));
     }
 
     public <T> Optional<ConstructorWrapper<? super T>> getConstructorOptional(@NonNull final T object,
@@ -354,7 +358,8 @@ public class Reflector {
     @SuppressWarnings("ConstantConditions")
     public <T> ConstructorWrapper<? super T> getConstructor(@NonNull final Class<T> clazz,
                                                             @NonNull final Predicate<Constructor<? super T>> predicate) {
-        return ConstructorWrapper.of(digForConstructor(clazz, predicate, Object.class).get().getValue());
+        return FastConstructorWrapper.from(digForConstructor(clazz, predicate, Object.class)
+                .orElseThrow(NullPointerException::new).getValue());
     }
 
     public <T> ConstructorWrapper<? super T> getConstructor(@NonNull final T object,

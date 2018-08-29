@@ -14,13 +14,16 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.util;
 
-/**
- * Super-interface for all reflector-wrappers
- */
-@SuppressWarnings("unused") // T in case it is needed
-public interface ReflectorWrapper<T> {
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import lombok.experimental.UtilityClass;
 
-    T getWrappedValue();
+@UtilityClass
+public class Caches {
+
+    public <T, R> Cache<T, R> weakValuesCache() {
+        return CacheBuilder.newBuilder().weakValues().build();
+    }
 }

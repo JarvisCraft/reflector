@@ -24,10 +24,10 @@ import static org.junit.jupiter.api.Assertions.*;
 import static ru.progrm_jarvis.reflector.Reflector.newUnsafeInstance;
 
 @SuppressWarnings("WeakerAccess")
-public class ReflectorTest {
+class ReflectorTest {
 
     @Test
-    public void testDigForField() throws Exception {
+    void testDigForField() throws Exception {
         assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredField("baz"))),
                 Reflector.digForField(Object3.class, field -> field.getName().equals("baz"), Object.class)
@@ -58,7 +58,7 @@ public class ReflectorTest {
     }
 
     @Test
-    public void testDigForMethod() throws Exception {
+    void testDigForMethod() throws Exception {
         assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredMethod("baz"))),
                 Reflector.digForMethod(Object3.class, field -> field.getName().equals("baz"), Object.class)
@@ -109,7 +109,7 @@ public class ReflectorTest {
 
     @Test
     @SuppressWarnings({"AssertEqualsBetweenInconvertibleTypes", "JavaReflectionMemberAccess"})
-    public void testDigForConstructor() throws Exception {
+    void testDigForConstructor() throws Exception {
         assertEquals(
                 Optional.of(new ClassMember<>(Object3.class, Object3.class.getDeclaredConstructor())),
                 Reflector.digForConstructor(Object3.class,
@@ -150,7 +150,7 @@ public class ReflectorTest {
     }
 
     @Test
-    public void testUnsafeInstance() {
+    void testUnsafeInstance() {
         assertNotEquals(new Object99(), newUnsafeInstance(Object99.class));
         assertEquals(0, newUnsafeInstance(Object99.class).value);
     }

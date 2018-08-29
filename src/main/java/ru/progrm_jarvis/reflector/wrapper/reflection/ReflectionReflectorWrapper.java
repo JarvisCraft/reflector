@@ -14,13 +14,9 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.wrapper.reflection;
 
-/**
- * Super-interface for all reflector-wrappers
- */
-@SuppressWarnings("unused") // T in case it is needed
-public interface ReflectorWrapper<T> {
+import ru.progrm_jarvis.reflector.wrapper.ReflectorWrapper;
 
-    T getWrappedValue();
+public interface ReflectionReflectorWrapper<T> extends ReflectorWrapper<T> {
 }

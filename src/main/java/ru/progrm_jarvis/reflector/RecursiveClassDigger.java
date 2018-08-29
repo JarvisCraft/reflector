@@ -21,7 +21,7 @@ import lombok.experimental.UtilityClass;
 import lombok.val;
 import org.jetbrains.annotations.Nullable;
 import ru.progrm_jarvis.reflector.util.ValueContainer;
-import ru.progrm_jarvis.reflector.util.ThrowingFunction;
+import ru.progrm_jarvis.reflector.util.function.ThrowingFunction;
 
 import java.util.Optional;
 
