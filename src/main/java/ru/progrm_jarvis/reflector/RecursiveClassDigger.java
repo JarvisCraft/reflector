@@ -107,11 +107,12 @@ public class RecursiveClassDigger {
         // if bound is reached then return what was found here
         if (clazz == bound) return Optional.empty();
 
-        Optional<ClassMember<?, R>> dug = Optional.empty();
+        Optional<ClassMember<?, R>> dug;
         {
             // try dig in superclass if not found
             val superClass = (Class<?>) clazz.getSuperclass();
             if (superClass != null) dug = digWithInterfaces(superClass, digger, bound);
+            else dug = Optional.empty();
         }
 
         if (dug.isPresent()) return dug;

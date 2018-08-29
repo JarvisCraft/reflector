@@ -1,17 +1,16 @@
-package ru.progrm_jarvis.reflector.util.emptyconstructor;
+package ru.progrm_jarvis.reflector.bytecode.asm;
+
+import lombok.NoArgsConstructor;
+import lombok.val;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.WeakHashMap;
-import java.util.concurrent.ConcurrentMap;
 
+@NoArgsConstructor
 public class SafeClassDefiner implements ClassDefiner {
-    private static final SafeClassDefiner INSTANCE = new SafeClassDefiner();
 
-    private SafeClassDefiner() {
-    }
-
-    private final Map<ClassLoader, GeneratedClassLoader> loaders = Collections.synchronizedMap(new WeakHashMap<>());;
+    private final Map<ClassLoader, GeneratedClassLoader> loaders = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
     public Class<?> defineClass(ClassLoader parentLoader, String name, byte[] data) {
@@ -46,9 +45,10 @@ public class SafeClassDefiner implements ClassDefiner {
                     return c;
                 }
             } else {
-                Class<?> c = defineClass(name, data, 0, data.length);
-                resolveClass(c);
-                return c;
+                val clazz = defineClass(null, data, 0, data.length);
+                resolveClass(clazz);
+
+                return clazz;
             }
         }
 
@@ -67,9 +67,5 @@ public class SafeClassDefiner implements ClassDefiner {
                 }
             }
         }
-    }
-
-    public static SafeClassDefiner getInstance() {
-        return INSTANCE;
     }
 }

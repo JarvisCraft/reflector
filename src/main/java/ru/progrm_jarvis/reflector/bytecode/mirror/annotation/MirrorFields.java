@@ -13,10 +13,21 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-/**
- * Allows you to create objects without invoking constructor
- *
- * @author hyndor
- */
-package ru.progrm_jarvis.reflector.util.emptyconstructor;
 
+package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
+
+import ru.progrm_jarvis.reflector.bytecode.mirror.MirroringPolicy;
+
+import java.lang.annotation.*;
+
+/**
+ * Indicates that fields of this class should be mirrored according to {@link MirroringPolicy}
+ */
+@Inherited
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MirrorFields {
+
+    MirroringPolicy value() default MirroringPolicy.ALL;
+}

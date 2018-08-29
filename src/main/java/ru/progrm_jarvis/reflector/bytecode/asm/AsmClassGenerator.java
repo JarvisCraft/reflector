@@ -1,4 +1,4 @@
-package ru.progrm_jarvis.reflector.util.emptyconstructor;
+package ru.progrm_jarvis.reflector.bytecode.asm;
 
 import org.objectweb.asm.*;
 
@@ -36,7 +36,7 @@ public class AsmClassGenerator implements ClassGenerator {
         String className;
         synchronized (AsmClassGenerator.class) {
             className =
-                    "ru/progrm_jarvis/reflector/util/emptyconstructor/generated/EmptyGeneratedConstructorAccessor"
+                    "ru/progrm_jarvis/reflector/bytecode/asm/generated/EmptyGeneratedConstructorAccessor"
                             + generatedEmptyConstructorAccessorCount++;
         }
         String dotClassName = className.replace("/", ".");
@@ -47,7 +47,8 @@ public class AsmClassGenerator implements ClassGenerator {
 
         cw.visit(52, ACC_PUBLIC + ACC_SUPER, className, null, superClassName,
                 new String[]{
-                        "ru/progrm_jarvis/reflector/util/emptyconstructor/EmptyConstructorCreator"});
+                        "ru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator"
+                });
 
         generateEmptyConstructor(cw, superClassName);
         {

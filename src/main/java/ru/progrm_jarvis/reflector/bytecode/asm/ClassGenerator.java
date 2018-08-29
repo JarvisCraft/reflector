@@ -1,4 +1,4 @@
-package ru.progrm_jarvis.reflector.util.emptyconstructor;
+package ru.progrm_jarvis.reflector.bytecode.asm;
 
 public interface ClassGenerator {
 

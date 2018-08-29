@@ -21,10 +21,10 @@ import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
 import ru.progrm_jarvis.reflector.util.ValueContainer;
-import ru.progrm_jarvis.reflector.util.emptyconstructor.AsmClassGenerator;
-import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassDefiner;
-import ru.progrm_jarvis.reflector.util.emptyconstructor.ClassGenerator;
-import ru.progrm_jarvis.reflector.util.emptyconstructor.SafeClassDefiner;
+import ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator;
+import ru.progrm_jarvis.reflector.bytecode.asm.ClassDefiner;
+import ru.progrm_jarvis.reflector.bytecode.asm.ClassGenerator;
+import ru.progrm_jarvis.reflector.bytecode.asm.SafeClassDefiner;
 import ru.progrm_jarvis.reflector.util.function.ThrowingFunction;
 import ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper;
 import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
@@ -33,6 +33,7 @@ import ru.progrm_jarvis.reflector.wrapper.fast.FastConstructorWrapper;
 import ru.progrm_jarvis.reflector.wrapper.fast.FastFieldWrapper;
 import ru.progrm_jarvis.reflector.wrapper.fast.FastMethodWrapper;
 
+import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -48,6 +49,8 @@ import java.util.function.Predicate;
 @UtilityClass
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Reflector {
+
+    private static final SafeClassDefiner SAFE_CLASS_DEFINER = new SafeClassDefiner();
 
     ///////////////////////////////////////////////////////////////////////////
     // Unwrapped
@@ -81,10 +84,19 @@ public class Reflector {
     }
 
     public ClassGenerator newAsmClassGenerator(){
-        return newAsmClassGenerator(SafeClassDefiner.getInstance(), null);
+        return newAsmClassGenerator(SAFE_CLASS_DEFINER, null);
     }
 
-    public ClassGenerator newAsmClassGenerator(@NonNull ClassDefiner classDefiner, ClassLoader classLoader){
+    public ClassGenerator newAsmClassGenerator(final ClassDefiner classDefiner){
+        return newAsmClassGenerator(classDefiner, null);
+    }
+
+    public ClassGenerator newAsmClassGenerator(final ClassLoader classLoader){
+        return newAsmClassGenerator(SAFE_CLASS_DEFINER, classLoader);
+    }
+
+    public ClassGenerator newAsmClassGenerator(@NonNull final ClassDefiner classDefiner,
+                                               @Nullable final ClassLoader classLoader){
         return new AsmClassGenerator(classDefiner, classLoader);
     }
 
