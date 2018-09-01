@@ -1,4 +1,4 @@
-package ru.progrm_jarvis.reflector;
+package ru.progrm_jarvis.reflector.bytecode;
 
 import javassist.CannotCompileException;
 import javassist.ClassPool;
@@ -12,10 +12,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static ru.progrm_jarvis.reflector.bytecode.BytecodeHelper.create;
 
 class BytecodeHelperTest {
 
-    /* todo
     private final BytecodeHelper bytecodeHelper = create();
     private static final String CLASSNAME_PREFIX = BytecodeHelperTest.class.getTypeName().concat("$");
 
@@ -154,6 +154,16 @@ class BytecodeHelperTest {
         assertEquals(":)", getMethod.invoke(emptyClassInstance));
     }
 
+    @Test
+    void testIsChildSignature() throws NotFoundException {
+        val parent = bytecodeHelper.get(InterfaceDeclaringMethods.class.getTypeName());
+        val notParent = bytecodeHelper.get(InterfaceDeclaringOtherMethods.class.getTypeName());
+        val child = bytecodeHelper.get(ClassWithMethods.class.getTypeName());
+
+        assertTrue(BytecodeHelper.isChildSignature(child.getDeclaredMethod("m1"), parent.getDeclaredMethod("m1")));
+        assertFalse(BytecodeHelper.isChildSignature(child.getDeclaredMethod("m2"), notParent.getDeclaredMethod("m2")));
+    }
+
     private interface Bar {
         byte lol();
     }
@@ -230,5 +240,24 @@ class BytecodeHelperTest {
     }
 
     private static final class EmptyClass {}
-    */
+
+    private interface InterfaceDeclaringMethods {
+        String m1(String a) throws RuntimeException, Error;
+    }
+
+    private interface InterfaceDeclaringOtherMethods {
+        String m2(String a) throws RuntimeException, Error;
+    }
+
+    private class ClassWithMethods implements InterfaceDeclaringMethods {
+
+        @Override
+        public String m1(final String a) throws IllegalArgumentException {
+            return "<3";
+        }
+
+        public Object m2(final String a) throws IllegalArgumentException {
+            return "<3";
+        }
+    }
 }

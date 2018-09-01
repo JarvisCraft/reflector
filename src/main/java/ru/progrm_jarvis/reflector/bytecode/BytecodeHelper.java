@@ -27,6 +27,8 @@ import ru.progrm_jarvis.reflector.wrapper.MethodWrapper;
 import ru.progrm_jarvis.reflector.wrapper.fast.FastFieldWrapper;
 import ru.progrm_jarvis.reflector.wrapper.fast.FastMethodWrapper;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 /**
@@ -241,14 +243,11 @@ public class BytecodeHelper {
             methodAdding:
             for (val ctMethod : ctImplementation.getDeclaredMethods()) {
                 // check whether method belongs to one of interfaces
-                System.out.println("Decl of " +ctMethod+" is "+ctMethod.getDeclaringClass().getName());
                 val declaringClass = ctMethod.getDeclaringClass();
                 CtClass[] implementedInterfaces = null; // lazily initialized
 
                 for (val ctInterface : ctInterfaces) {
-                    System.out.println("Checking: " + ctInterface.getName());
                     if (ctInterface == declaringClass) {
-                        System.out.println("+");
 
                         // add method copy setting declaring class to the one updated
                         copyMethod(ctMethod, ctClass);
@@ -294,6 +293,62 @@ public class BytecodeHelper {
         return inject(
                 className, copyFields, interfaceNames.toArray(new String[0]), implementationNames.toArray(new String[0])
         );
+    }
+
+    /**
+     * Checks whether the type is a child-type of another one
+     *
+     * @param child possible child class
+     * @param parent possible parent class
+     * @return {@code true} if child's superclass or one of superinterfaces is parent
+     */
+    @SneakyThrows
+    public static boolean isChild(@NonNull final CtClass child, @NonNull final CtClass parent) {
+        if (child == parent) return true;
+        if (parent.isInterface()) {
+            for (val anInterface : parent.getInterfaces()) if (isChild(anInterface, parent)) return true;
+
+            return false;
+        }
+
+        return child.getSuperclass() == parent;
+    }
+
+    @SneakyThrows
+    public static boolean isChildSignature(@NonNull final CtMethod method, @NonNull final CtMethod superMethod) {
+        if (method.getName().equals(superMethod.getName())
+                && isChild(method.getReturnType(), superMethod.getReturnType())) {
+            { // there should be no declared arguments in method not related to super
+                val methodParameterTypes = method.getParameterTypes();
+                val superParameterTypes = superMethod.getParameterTypes();
+
+                // at least length of arguments should be equal
+                if (methodParameterTypes.length == superParameterTypes.length) {
+                    for (var i = 0; i < superParameterTypes.length; i++) if (methodParameterTypes[i]
+                            != superParameterTypes[i]) return false;
+                    //____ // check if each parameter type is child of parent otherwise returning FALSE at first mistype
+                    //____ // IMPORTANT: parameter type may be more general then super like foo(String) -> foo(Object)
+                    //____ for (var i = 0; i < superParameterTypes.length; i++) if (
+                    //____         !isChild(superParameterTypes[i], methodParameterTypes[i])) return false;
+                } else return false;
+            }
+
+            { // there should be no declared exceptions in method not related to super
+                val superExceptionTypes = superMethod.getExceptionTypes();
+                exceptionTypeChecking:
+                for (val exceptionType : method.getExceptionTypes()) {
+                    // if none of super exception types are related to the one declared then return FALSE
+                    for (val superExceptionType : superExceptionTypes) if (
+                            isChild(exceptionType, superExceptionType)) continue exceptionTypeChecking;
+
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     @Data
