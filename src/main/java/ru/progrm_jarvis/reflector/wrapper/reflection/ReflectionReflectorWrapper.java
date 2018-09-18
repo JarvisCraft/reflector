@@ -18,5 +18,10 @@ package ru.progrm_jarvis.reflector.wrapper.reflection;
 
 import ru.progrm_jarvis.reflector.wrapper.ReflectorWrapper;
 
+/**
+ * A simple {@link ReflectorWrapper<T>} based on Java Reflection API
+ *
+ * @param <T> {@inheritDoc}
+ */
 public interface ReflectionReflectorWrapper<T> extends ReflectorWrapper<T> {
 }

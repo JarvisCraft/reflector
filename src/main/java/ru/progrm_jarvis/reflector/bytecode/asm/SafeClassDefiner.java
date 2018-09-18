@@ -1,7 +1,9 @@
 package ru.progrm_jarvis.reflector.bytecode.asm;
 
 import lombok.NoArgsConstructor;
+import lombok.NonNull;
 import lombok.val;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.Map;
@@ -13,21 +15,22 @@ public class SafeClassDefiner implements ClassDefiner {
     private final Map<ClassLoader, GeneratedClassLoader> loaders = Collections.synchronizedMap(new WeakHashMap<>());
 
     @Override
-    public Class<?> defineClass(ClassLoader parentLoader, String name, byte[] data) {
-        GeneratedClassLoader loader = loaders.computeIfAbsent(parentLoader, GeneratedClassLoader::new);
-        if (name != null) {
-            synchronized (loader.getClassLoadingLock(name)) {
-                if(loader.hasClass(name)) {
-                    throw new IllegalStateException(String.format("%s already defined!", name));
-                }
-                return loader.define(name, data);
-            }
-        } else {
-            return loader.define(null, data);
+    public Class<?> defineClass(@NonNull final ClassLoader parentLoader, @Nullable final String name,
+                                @NonNull final byte[] bytecode) {
+        // get (creating new if none exists) GeneratedClassLoader associated with this parent classloader
+        val loader = loaders.computeIfAbsent(parentLoader, GeneratedClassLoader::new);
+        if (name != null) synchronized (loader.getClassLoadingLock(name)) {
+            if (loader.hasClass(name)) throw new IllegalStateException("Class ".concat(name)
+                    .concat(" is already defined!"));
+
+            return loader.define(name, bytecode);
         }
+
+        return loader.define(null, bytecode);
     }
 
     private static class GeneratedClassLoader extends ClassLoader {
+
         static {
             ClassLoader.registerAsParallelCapable();
         }
@@ -53,11 +56,11 @@ public class SafeClassDefiner implements ClassDefiner {
         }
 
         @Override
-        public Object getClassLoadingLock(String name) {
-            return super.getClassLoadingLock(name);
+        public Object getClassLoadingLock(final String className) {
+            return super.getClassLoadingLock(className);
         }
 
-        public boolean hasClass(String name) {
+        public boolean hasClass(@NonNull final String name) {
             synchronized (getClassLoadingLock(name)) {
                 try {
                     Class.forName(name);

@@ -20,8 +20,10 @@ import ru.progrm_jarvis.reflector.wrapper.ReflectorWrapper;
 
 
 /**
- * A fast {@link ReflectorWrapper} implementation for direct access to reflection-related objects
- * without performing any access checks.
+ * A fast {@link ReflectorWrapper<T>} implementation for direct access to reflection-related objects
+ * without performing any access checks
+ *
+ * @param <T> {@inheritDoc}
  *
  * @see java.lang.invoke.MethodHandle
  */

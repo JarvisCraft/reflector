@@ -20,24 +20,15 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import ru.progrm_jarvis.reflector.util.ValueContainer;
-import ru.progrm_jarvis.reflector.bytecode.asm.AsmClassGenerator;
-import ru.progrm_jarvis.reflector.bytecode.asm.ClassDefiner;
-import ru.progrm_jarvis.reflector.bytecode.asm.ClassGenerator;
 import ru.progrm_jarvis.reflector.bytecode.asm.SafeClassDefiner;
+import ru.progrm_jarvis.reflector.util.ValueContainer;
 import ru.progrm_jarvis.reflector.util.function.ThrowingFunction;
-import ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper;
-import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
-import ru.progrm_jarvis.reflector.wrapper.MethodWrapper;
-import ru.progrm_jarvis.reflector.wrapper.fast.FastConstructorWrapper;
-import ru.progrm_jarvis.reflector.wrapper.fast.FastFieldWrapper;
-import ru.progrm_jarvis.reflector.wrapper.fast.FastMethodWrapper;
 
-import javax.annotation.Nullable;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.function.Predicate;
 
@@ -83,6 +74,7 @@ public class Reflector {
                 }, bound);
     }
 
+    /*
     public ClassGenerator newAsmClassGenerator(){
         return newAsmClassGenerator(SAFE_CLASS_DEFINER, null);
     }
@@ -99,6 +91,7 @@ public class Reflector {
                                                @Nullable final ClassLoader classLoader){
         return new AsmClassGenerator(classDefiner, classLoader);
     }
+    */
 
     /**
      * Digs for field following the given condition in class specified and all its parents until the bound.
@@ -174,7 +167,7 @@ public class Reflector {
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Wrapped field
+    // Field
     ///////////////////////////////////////////////////////////////////////////
 
     /**
@@ -187,8 +180,8 @@ public class Reflector {
      * @return field wrapper for object's field
      */
     @SneakyThrows
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return FastFieldWrapper.from(clazz.getField(name));
+    public <T, R> Field getField(@NonNull final Class<T> clazz, @NonNull final String name) {
+        return clazz.getField(name);
     }
 
     /**
@@ -201,7 +194,7 @@ public class Reflector {
      * @param <R> type of field value
      * @return field wrapper for object's field
      */
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Field getField(@NonNull final T object, @NonNull final String name) {
         return getField(classOf(object), name);
     }
 
@@ -215,8 +208,8 @@ public class Reflector {
      * @return field wrapper for object's field
      */
     @SneakyThrows
-    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final Class<T> clazz, @NonNull final String name) {
-        return FastFieldWrapper.from(clazz.getDeclaredField(name));
+    public <T, R> Field getDeclaredField(@NonNull final Class<T> clazz, @NonNull final String name) {
+        return clazz.getDeclaredField(name);
     }
 
     /**
@@ -229,175 +222,172 @@ public class Reflector {
      * @param <R> type of field value
      * @return field wrapper for object's field
      */
-    public <T, R> FieldWrapper<T, R> getDeclaredField(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Field getDeclaredField(@NonNull final T object, @NonNull final String name) {
         return getDeclaredField(classOf(object), name);
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
-        return digForField(clazz, predicate, Object.class).map(member -> FastFieldWrapper.from(member.getValue()));
+    public <T, R> Optional<Field> getFieldOptional(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
+        return digForField(clazz, predicate, Object.class).map(ClassMember::getValue);
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getFieldOptional(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Optional<Field> getFieldOptional(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
         return getFieldOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
-        return FastFieldWrapper.from(digForField(clazz, predicate, Object.class)
-                .orElseThrow(NullPointerException::new).getValue());
+    public <T, R> Field getField(@NonNull final Class<T> clazz, @NonNull final Predicate<Field> predicate) {
+        return digForField(clazz, predicate, Object.class).orElseThrow(NoSuchElementException::new).getValue();
     }
 
-    public <T, R> FieldWrapper<T, R> getField(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
+    public <T, R> Field getField(@NonNull final T object, @NonNull final Predicate<Field> predicate) {
         return getField(classOf(object), predicate);
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
+    public <T, R> Optional<Field> getAnyFieldOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getFieldOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> Optional<FieldWrapper<T, R>> getAnyFieldOptional(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Optional<Field> getAnyFieldOptional(@NonNull final T object, @NonNull final String name) {
         return getAnyFieldOptional(classOf(object), name);
     }
 
-    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final Class<T> clazz, @NonNull final String name) {
+    public <T, R> Field getAnyField(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getField(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> FieldWrapper<T, R> getAnyField(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Field getAnyField(@NonNull final T object, @NonNull final String name) {
         return getAnyField(classOf(object), name);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Wrapped field
+    // Method
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final String name,
-                                                @NonNull final Class<?>... parameterTypes) {
-        return FastMethodWrapper.from(clazz.getMethod(name, parameterTypes));
+    public <T, R> Method getMethod(@NonNull final Class<T> clazz, @NonNull final String name,
+                                   @NonNull final Class<?>... parameterTypes) {
+        return clazz.getMethod(name, parameterTypes);
     }
 
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final String name,
-                                                @NonNull final Class<?>... parameterTypes) {
+    public <T, R> Method getMethod(@NonNull final T object, @NonNull final String name,
+                                   @NonNull final Class<?>... parameterTypes) {
         return getMethod(classOf(object), name, parameterTypes);
     }
 
     @SneakyThrows
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name,
-                                                        @NonNull final Class<?>... parameterTypes) {
-        return FastMethodWrapper.from(clazz.getDeclaredMethod(name, parameterTypes));
+    public <T, R> Method getDeclaredMethod(@NonNull final Class<T> clazz, @NonNull final String name,
+                                           @NonNull final Class<?>... parameterTypes) {
+        return clazz.getDeclaredMethod(name, parameterTypes);
     }
 
-    public <T, R> MethodWrapper<T, R> getDeclaredMethod(@NonNull final T object, @NonNull final String name,
-                                                        @NonNull final Class<?>... parameterTypes) {
+    public <T, R> Method getDeclaredMethod(@NonNull final T object, @NonNull final String name,
+                                           @NonNull final Class<?>... parameterTypes) {
         return getDeclaredMethod(classOf(object), name, parameterTypes);
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final Class<T> clazz,
-                                                                  @NonNull final Predicate<Method> predicate) {
-        return digForMethod(clazz, predicate, Object.class).map(member -> FastMethodWrapper.from(member.getValue()));
+    public <T, R> Optional<Method> getMethodOptional(@NonNull final Class<T> clazz,
+                                                     @NonNull final Predicate<Method> predicate) {
+        return digForMethod(clazz, predicate, Object.class).map(ClassMember::getValue);
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getMethodOptional(@NonNull final T object,
-                                                                  @NonNull final Predicate<Method> predicate) {
+    public <T, R> Optional<Method> getMethodOptional(@NonNull final T object,
+                                                     @NonNull final Predicate<Method> predicate) {
         return getMethodOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final Class<T> clazz, @NonNull final Predicate<Method> predicate) {
-        return FastMethodWrapper.from(digForMethod(clazz, predicate, Object.class)
-                .orElseThrow(NullPointerException::new).getValue());
+    public <T, R> Method getMethod(@NonNull final Class<T> clazz, @NonNull final Predicate<Method> predicate) {
+        return digForMethod(clazz, predicate, Object.class).orElseThrow(NullPointerException::new).getValue();
     }
 
-    public <T, R> MethodWrapper<T, R> getMethod(@NonNull final T object, @NonNull final Predicate<Method> predicate) {
+    public <T, R> Method getMethod(@NonNull final T object, @NonNull final Predicate<Method> predicate) {
         return getMethod(classOf(object), predicate);
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
+    public <T, R> Optional<Method> getAnyMethodOptional(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getMethodOptional(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> Optional<MethodWrapper<T, R>> getAnyMethodOptional(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Optional<Method> getAnyMethodOptional(@NonNull final T object, @NonNull final String name) {
         return getAnyMethodOptional(classOf(object), name);
     }
 
-    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
+    public <T, R> Method getAnyMethod(@NonNull final Class<T> clazz, @NonNull final String name) {
         return getMethod(clazz, field -> name.equals(field.getName()));
     }
 
-    public <T, R> MethodWrapper<T, R> getAnyMethod(@NonNull final T object, @NonNull final String name) {
+    public <T, R> Method getAnyMethod(@NonNull final T object, @NonNull final String name) {
         return getAnyMethod(classOf(object), name);
     }
 
     ///////////////////////////////////////////////////////////////////////////
-    // Wrapped constructors
+    // Constructor
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T> ConstructorWrapper<? extends T> getConstructor(@NonNull final Class<T> clazz,
-                                                              @NonNull final Class<?>... parameterTypes) {
-        return FastConstructorWrapper.from(clazz.getConstructor(parameterTypes));
+    public <T> Constructor<? extends T> getConstructor(@NonNull final Class<T> clazz,
+                                                       @NonNull final Class<?>... parameterTypes) {
+        return clazz.getConstructor(parameterTypes);
     }
 
-    public <T> ConstructorWrapper<? extends T> getConstructor(@NonNull final T object,
-                                                              @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<? extends T> getConstructor(@NonNull final T object,
+                                                       @NonNull final Class<?>... parameterTypes) {
         return getConstructor(classOf(object), parameterTypes);
     }
 
     @SneakyThrows
-    public <T> ConstructorWrapper<? extends T> getDeclaredConstructor(@NonNull final Class<T> clazz,
-                                                                      @NonNull final Class<?>... parameterTypes) {
-        return FastConstructorWrapper.from(clazz.getDeclaredConstructor(parameterTypes));
+    public <T> Constructor<? extends T> getDeclaredConstructor(@NonNull final Class<T> clazz,
+                                                               @NonNull final Class<?>... parameterTypes) {
+        return clazz.getDeclaredConstructor(parameterTypes);
     }
 
-    public <T> ConstructorWrapper<? extends T> getDeclaredConstructor(@NonNull final T object,
-                                                                      @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<? extends T> getDeclaredConstructor(@NonNull final T object,
+                                                               @NonNull final Class<?>... parameterTypes) {
         return getDeclaredConstructor(classOf(object), parameterTypes);
     }
 
-    public <T> Optional<ConstructorWrapper<? super T>> getConstructorOptional(@NonNull final Class<T> clazz,
-                                                                              @NonNull final Predicate<Constructor<? super T>>
+    public <T> Optional<Constructor<? super T>> getConstructorOptional(@NonNull final Class<T> clazz,
+                                                                       @NonNull final Predicate<Constructor<? super T>>
                                                                         predicate) {
-        return digForConstructor(clazz, predicate, Object.class).map(member -> FastConstructorWrapper.from(member.getValue()));
+        return digForConstructor(clazz, predicate, Object.class).map(ClassMember::getValue);
     }
 
-    public <T> Optional<ConstructorWrapper<? super T>> getConstructorOptional(@NonNull final T object,
-                                                                              @NonNull final Predicate<Constructor<? super T>>
-                                                                        predicate) {
+    public <T> Optional<Constructor<? super T>> getConstructorOptional(@NonNull final T object,
+                                                                       @NonNull final Predicate<Constructor<? super T>>
+                                                                               predicate) {
         return getConstructorOptional(classOf(object), predicate);
     }
 
     @SuppressWarnings("ConstantConditions")
-    public <T> ConstructorWrapper<? super T> getConstructor(@NonNull final Class<T> clazz,
-                                                            @NonNull final Predicate<Constructor<? super T>> predicate) {
-        return FastConstructorWrapper.from(digForConstructor(clazz, predicate, Object.class)
-                .orElseThrow(NullPointerException::new).getValue());
+    public <T> Constructor<? super T> getConstructor(@NonNull final Class<T> clazz,
+                                                     @NonNull final Predicate<Constructor<? super T>> predicate) {
+        return digForConstructor(clazz, predicate, Object.class).orElseThrow(NullPointerException::new).getValue();
     }
 
-    public <T> ConstructorWrapper<? super T> getConstructor(@NonNull final T object,
-                                                            @NonNull final Predicate<Constructor<? super T>> predicate) {
+    public <T> Constructor<? super T> getConstructor(@NonNull final T object,
+                                                     @NonNull final Predicate<Constructor<? super T>> predicate) {
         return getConstructor(classOf(object), predicate);
     }
 
-    public <T> Optional<ConstructorWrapper<? super T>> getAnyConstructorOptional(@NonNull final Class<T> clazz,
-                                                                                 @NonNull final Class<?>... parameterTypes) {
+    public <T> Optional<Constructor<? super T>> getAnyConstructorOptional(@NonNull final Class<T> clazz,
+                                                                          @NonNull final Class<?>... parameterTypes) {
         return getConstructorOptional(clazz, (Predicate<Constructor<? super T>>)
                 constructor -> Arrays.equals(parameterTypes, constructor.getParameterTypes()));
     }
 
-    public <T> Optional<ConstructorWrapper<? super T>> getAnyConstructorOptional(@NonNull final T object,
-                                                                                 @NonNull final Class<?>... parameterTypes) {
+    public <T> Optional<Constructor<? super T>> getAnyConstructorOptional(@NonNull final T object,
+                                                                          @NonNull final Class<?>... parameterTypes) {
         return getAnyConstructorOptional(classOf(object), parameterTypes);
     }
 
-    public <T> ConstructorWrapper<? super T> getAnyConstructor(@NonNull final Class<T> clazz,
-                                                               @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<? super T> getAnyConstructor(@NonNull final Class<T> clazz,
+                                                        @NonNull final Class<?>... parameterTypes) {
         return getConstructor(clazz, (Predicate<Constructor<? super T>>)
                 constructor -> Arrays.equals(parameterTypes, constructor.getParameterTypes()));
     }
 
-    public <T> ConstructorWrapper<? super T> getAnyConstructor(@NonNull final T object,
-                                                               @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<? super T> getAnyConstructor(@NonNull final T object,
+                                                        @NonNull final Class<?>... parameterTypes) {
         return getAnyConstructor(classOf(object), parameterTypes);
     }
 

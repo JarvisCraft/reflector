@@ -66,4 +66,13 @@ public interface ClassMemberMirrorer<T extends CtMember> {
             return newMethod;
         };
     }
+
+    static ClassMemberMirrorer<CtConstructor> mirrorerOf(@NonNull final CtConstructor sourceConstructor) {
+        return target -> {
+            val newConstructor = CtNewConstructor.copy(sourceConstructor, target, null);
+            target.addConstructor(newConstructor);
+
+            return newConstructor;
+        };
+    }
 }

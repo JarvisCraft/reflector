@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
-import ru.progrm_jarvis.reflector.MethodHandleBuilder;
+import ru.progrm_jarvis.reflector.invoke.MethodHandleUtil;
 import ru.progrm_jarvis.reflector.util.Caches;
 import ru.progrm_jarvis.reflector.wrapper.AbstractConstructorWrapper;
 
@@ -51,7 +51,7 @@ public class FastConstructorWrapper<T>
     @SuppressWarnings("unchecked")
     public static <T> FastConstructorWrapper<T> from(@NonNull final Constructor<T> constructor) {
         return (FastConstructorWrapper<T>) CACHE.get(constructor, () -> new FastConstructorWrapper<>(
-                constructor, MethodHandleBuilder.methodHandleFrom(constructor)
+                constructor, MethodHandleUtil.methodHandleFrom(constructor)
         ));
     }
 

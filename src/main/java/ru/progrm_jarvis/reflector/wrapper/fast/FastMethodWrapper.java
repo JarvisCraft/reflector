@@ -18,7 +18,7 @@ package ru.progrm_jarvis.reflector.wrapper.fast;
 
 import com.google.common.cache.Cache;
 import lombok.*;
-import ru.progrm_jarvis.reflector.MethodHandleBuilder;
+import ru.progrm_jarvis.reflector.invoke.MethodHandleUtil;
 import ru.progrm_jarvis.reflector.util.Caches;
 import ru.progrm_jarvis.reflector.wrapper.AbstractMethodWrapper;
 
@@ -27,8 +27,7 @@ import java.lang.reflect.Method;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class FastMethodWrapper<T, R>
-        extends AbstractMethodWrapper<T, R> implements FastReflectorWrapper<Method> {
+public class FastMethodWrapper<T, R> extends AbstractMethodWrapper<T, R> implements FastReflectorWrapper<Method> {
 
     /**
      * Cache of method wrappers
@@ -47,7 +46,7 @@ public class FastMethodWrapper<T, R>
     @SuppressWarnings("unchecked")
     public static <T, R> FastMethodWrapper<T, R> from(@NonNull final Method method) {
         return (FastMethodWrapper<T, R>) CACHE.get(method, () -> new FastMethodWrapper<>(
-                method, MethodHandleBuilder.methodHandleFrom(method)
+                method, MethodHandleUtil.methodHandleFrom(method)
         ));
     }
 

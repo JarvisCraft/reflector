@@ -120,7 +120,7 @@ public class ReflectionFieldWrapper<T, V>
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public V updateValue(@Nullable final T instance, @Nullable final V value) {
+    public V getAndUpdate(@Nullable final T instance, @Nullable final V value) {
         return AccessHelper.operateAndGet(field, field -> {
             val oldValue = (V) field.get(instance);
 
@@ -132,8 +132,8 @@ public class ReflectionFieldWrapper<T, V>
 
 
     @Override
-    public V updateValue(@Nullable final V value) {
-        return updateValue(null, value);
+    public V getAndUpdate(@Nullable final V value) {
+        return getAndUpdate(null, value);
     }
 
     /**
@@ -147,7 +147,7 @@ public class ReflectionFieldWrapper<T, V>
     @Override
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public V updateValue(@Nullable final T instance, @NonNull final UnaryOperator<V> operator) {
+    public V getAndCompute(@Nullable final T instance, @NonNull final UnaryOperator<V> operator) {
         return AccessHelper.operateAndGet(field, field -> {
             val oldValue = (V) field.get(instance);
 
@@ -158,13 +158,13 @@ public class ReflectionFieldWrapper<T, V>
     }
 
     @Override
-    public V updateValue(final UnaryOperator<V> operator) {
-        return updateValue(null, operator);
+    public V getAndCompute(final UnaryOperator<V> operator) {
+        return getAndCompute(null, operator);
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public V computeValue(final T instance, final UnaryOperator<V> operator) {
+    public V computeAndGet(final T instance, final UnaryOperator<V> operator) {
         return AccessHelper.operateAndGet(field, field -> {
             val newValue = operator.apply((V) field.get(instance));
             field.set(instance, newValue);
@@ -174,7 +174,7 @@ public class ReflectionFieldWrapper<T, V>
     }
 
     @Override
-    public V computeValue(final UnaryOperator<V> operator) {
-        return computeValue(null, operator);
+    public V computeAndGet(final UnaryOperator<V> operator) {
+        return computeAndGet(null, operator);
     }
 }

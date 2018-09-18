@@ -1,44 +1,34 @@
 package ru.progrm_jarvis.reflector.bytecode.asm;
 
-import org.objectweb.asm.*;
-
-import java.util.Objects;
+import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.SneakyThrows;
+import lombok.val;
+import org.jetbrains.annotations.Nullable;
+import org.objectweb.asm.ClassWriter;
+import org.objectweb.asm.MethodVisitor;
 
 import static org.objectweb.asm.Opcodes.*;
 
+@AllArgsConstructor
 public class AsmClassGenerator implements ClassGenerator {
 
     private static volatile int generatedEmptyConstructorAccessorCount = 0;
 
-    private ClassDefiner classDefiner;
-    private ClassLoader classLoader;
+    @NonNull private ClassDefiner classDefiner;
+    @NonNull private GeneratedClassNameSupplier classNameSupplier;
+    @Nullable private ClassLoader classLoader;
 
-    public AsmClassGenerator(ClassDefiner classDefiner) {
-        this(classDefiner, null);
+    public AsmClassGenerator(final ClassDefiner classDefiner) {
+        this(classDefiner, IncrementingNameIdGeneratedClassNameSupplier
+                .from(AsmClassGenerator.class.getPackage().getName()
+                        .concat(".$$generated$$.emptyconstructor.EmptyConstructorCreator$")), null);
     }
 
-    public AsmClassGenerator(ClassDefiner classDefiner, ClassLoader classLoader) {
-        Objects.requireNonNull(classDefiner, "Class definer is null");
-        this.classDefiner = classDefiner;
-        this.classLoader = classLoader;
-    }
+    @SneakyThrows
+    public EmptyConstructorCreator newClassInstanceManipulator(@NonNull final Class<?> clazz) {
+        val className = classNameSupplier.get();
 
-    @Override
-    public EmptyConstructorCreator newClassInstanceManipulator(Class<?> clazz) {
-        try {
-            return newClassInstanceManipulator0(clazz);
-        } catch (Throwable throwable) {
-            throw new RuntimeException(throwable);
-        }
-    }
-
-    private EmptyConstructorCreator newClassInstanceManipulator0(Class<?> clazz) throws Throwable {
-        String className;
-        synchronized (AsmClassGenerator.class) {
-            className =
-                    "ru/progrm_jarvis/reflector/bytecode/asm/generated/EmptyGeneratedConstructorAccessor"
-                            + generatedEmptyConstructorAccessorCount++;
-        }
         String dotClassName = className.replace("/", ".");
         String targetClassName = clazz.getName().replace(".", "/");
         String superClassName = "sun/reflect/MagicAccessorImpl";
@@ -68,17 +58,17 @@ public class AsmClassGenerator implements ClassGenerator {
         Class<?> aClass = classDefiner
                 .defineClass(classLoader == null ? getClass().getClassLoader() : classLoader,
                         dotClassName, bytes);
+
         return (EmptyConstructorCreator) aClass.newInstance();
     }
 
     private void generateEmptyConstructor(ClassWriter cw, String superClassName) {
-        MethodVisitor mv = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
-        mv.visitCode();
-        mv.visitVarInsn(ALOAD, 0);
-        mv.visitMethodInsn(INVOKESPECIAL, superClassName, "<init>", "()V", false);
-        mv.visitInsn(RETURN);
-        mv.visitMaxs(1, 1);
-        mv.visitEnd();
+        val methodVisitor = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
+        methodVisitor.visitCode();
+        methodVisitor.visitVarInsn(ALOAD, 0);
+        methodVisitor.visitMethodInsn(INVOKESPECIAL, superClassName, "<init>", "()V", false);
+        methodVisitor.visitInsn(RETURN);
+        methodVisitor.visitMaxs(1, 1);
+        methodVisitor.visitEnd();
     }
-
 }

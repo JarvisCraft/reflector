@@ -26,10 +26,11 @@ public enum MirroringPolicy {
      * Only visible methods (<i>public</i>) should be mirrored
      */
     VISIBLE,
+    /* This may be added
     /**
      * Only members related to implementing some interfaces should be mirrored
-     */
     IMPLEMENTING,
+     */
     /**
      * Only annotated members should be mirrored
      */

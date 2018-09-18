@@ -215,69 +215,69 @@ class ReflectionFieldWrapperTest {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("intField")
             );
-            assertThrows(NullPointerException.class, () -> field.updateValue(2));
-            assertThrows(NullPointerException.class, () -> field.updateValue(null, 2));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(2));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(null, 2));
 
-            assertEquals(0, (int) field.updateValue(instance, value -> value + 5 + 1));
+            assertEquals(0, (int) field.getAndCompute(instance, value -> value + 5 + 1));
             assertEquals(6, (int) field.getValue(instance));
-            assertEquals((int) field.updateValue(instance, 10), 6);
+            assertEquals((int) field.getAndUpdate(instance, 10), 6);
             assertEquals((int) field.getValue(instance), 10);
 
-            assertThrows(IllegalArgumentException.class, () -> field.updateValue(instance, (Integer) null));
+            assertThrows(IllegalArgumentException.class, () -> field.getAndUpdate(instance, (Integer) null));
         }
 
         {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("finalIntField")
             );
-            assertThrows(NullPointerException.class, () -> field.updateValue(2));
-            assertThrows(NullPointerException.class, () -> field.updateValue(null, 2));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(2));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(null, 2));
 
-            assertEquals(10, (int) field.updateValue(instance, value -> value + 5 + 1));
+            assertEquals(10, (int) field.getAndCompute(instance, value -> value + 5 + 1));
             assertEquals(16, (int) field.getValue(instance));
-            assertEquals((int) field.updateValue(instance, 20), 16);
+            assertEquals((int) field.getAndUpdate(instance, 20), 16);
             assertEquals((int) field.getValue(instance), 20);
 
-            assertThrows(IllegalArgumentException.class, () -> field.updateValue(instance, (Integer) null));
+            assertThrows(IllegalArgumentException.class, () -> field.getAndUpdate(instance, (Integer) null));
         }
 
         {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, Integer>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("staticIntField")
             );
-            assertEquals(0, (int) field.updateValue(2));
+            assertEquals(0, (int) field.getAndUpdate(2));
             assertEquals(2, (int) field.getValue());
             assertEquals(2, (int) field.getValue(null));
             assertEquals(2, (int) field.getValue(instance));
 
-            assertEquals(2, (int) field.updateValue(null, 4));
+            assertEquals(2, (int) field.getAndUpdate(null, 4));
             assertEquals(4, (int) field.getValue());
             assertEquals(4, (int) field.getValue(null));
             assertEquals(4, (int) field.getValue(instance));
 
-            assertEquals(4, (int) field.updateValue(value -> value + 5 + 1));
+            assertEquals(4, (int) field.getAndCompute(value -> value + 5 + 1));
             assertEquals(10, (int) field.getValue());
             assertEquals(10, (int) field.getValue(null));
             assertEquals(10, (int) field.getValue(instance));
 
-            assertThrows(IllegalArgumentException.class, () -> field.updateValue((Integer) null));
-            assertThrows(IllegalArgumentException.class, () -> field.updateValue(null, (Integer) null));
-            assertThrows(IllegalArgumentException.class, () -> field.updateValue(instance, (Integer) null));
+            assertThrows(IllegalArgumentException.class, () -> field.getAndUpdate((Integer) null));
+            assertThrows(IllegalArgumentException.class, () -> field.getAndUpdate(null, (Integer) null));
+            assertThrows(IllegalArgumentException.class, () -> field.getAndUpdate(instance, (Integer) null));
         }
 
         {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("stringField")
             );
-            assertThrows(NullPointerException.class, () -> field.updateValue("q"));
-            assertThrows(NullPointerException.class, () -> field.updateValue(null, "w"));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate("q"));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(null, "w"));
 
-            assertEquals("hello", field.updateValue(instance, value -> value.concat(" world")));
+            assertEquals("hello", field.getAndCompute(instance, value -> value.concat(" world")));
             assertEquals("hello world", field.getValue(instance));
-            assertEquals(field.updateValue(instance, "<3"), "hello world");
+            assertEquals(field.getAndUpdate(instance, "<3"), "hello world");
             assertEquals(field.getValue(instance), "<3");
 
-            assertEquals("<3", field.updateValue(instance, (String) null));
+            assertEquals("<3", field.getAndUpdate(instance, (String) null));
             assertNull(field.getValue(instance));
         }
 
@@ -285,16 +285,16 @@ class ReflectionFieldWrapperTest {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("finalStringField")
             );
-            assertThrows(NullPointerException.class, () -> field.updateValue("q"));
-            assertThrows(NullPointerException.class, () -> field.updateValue(null, "w"));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate("q"));
+            assertThrows(NullPointerException.class, () -> field.getAndUpdate(null, "w"));
 
-            assertEquals("value1", field.updateValue(instance, "yay"));
+            assertEquals("value1", field.getAndUpdate(instance, "yay"));
             assertEquals("yay", field.getValue(instance));
 
-            assertEquals("yay", field.updateValue(instance, value -> value.concat("ay")));
+            assertEquals("yay", field.getAndCompute(instance, value -> value.concat("ay")));
             assertEquals("yayay", field.getValue(instance));
 
-            assertEquals("yayay", field.updateValue(instance, (String) null));
+            assertEquals("yayay", field.getAndUpdate(instance, (String) null));
             assertNull(field.getValue(instance));
         }
 
@@ -302,27 +302,27 @@ class ReflectionFieldWrapperTest {
             val field = ReflectionFieldWrapper.<PrivateStaticClass_UpdateTest, String>from(
                     PrivateStaticClass_UpdateTest.class.getDeclaredField("staticStringField")
             );
-            assertEquals("hi", field.updateValue("one"));
+            assertEquals("hi", field.getAndUpdate("one"));
             assertEquals("one", field.getValue());
             assertEquals("one", field.getValue(null));
             assertEquals("one", field.getValue(instance));
 
-            assertEquals("one", field.updateValue(null, "two"));
+            assertEquals("one", field.getAndUpdate(null, "two"));
             assertEquals("two", field.getValue());
             assertEquals("two", field.getValue(null));
             assertEquals("two", field.getValue(instance));
 
-            assertEquals("two", field.updateValue(instance, "three"));
+            assertEquals("two", field.getAndUpdate(instance, "three"));
             assertEquals("three", field.getValue());
             assertEquals("three", field.getValue(null));
             assertEquals("three", field.getValue(instance));
 
-            assertEquals("three", field.updateValue(value -> value.replace("h", "")));
+            assertEquals("three", field.getAndCompute(value -> value.replace("h", "")));
             assertEquals("tree", field.getValue());
             assertEquals("tree", field.getValue(null));
             assertEquals("tree", field.getValue(instance));
 
-            assertEquals("tree", field.updateValue((String) null));
+            assertEquals("tree", field.getAndUpdate((String) null));
             assertNull(field.getValue());
             assertNull(field.getValue(null));
             assertNull(field.getValue(instance));

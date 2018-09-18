@@ -16,18 +16,16 @@
 
 package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
 
-import ru.progrm_jarvis.reflector.bytecode.mirror.MirroringPolicy;
-
 import java.lang.annotation.*;
 
 /**
- * Indicates that members should be mirrored according to {@link MirroringPolicy}
+ * Indicates that class initializers should or should not be mirrored
  */
 @Inherited
 @Documented
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface MirrorEverything {
+public @interface MirrorClassInitializers {
 
-    MirroringPolicy value() default MirroringPolicy.ALL;
+    boolean value() default true;
 }

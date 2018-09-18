@@ -34,7 +34,7 @@ public interface FieldWrapper<T, V> extends ReflectorWrapper<Field> {
      * Gets value of this field ignoring any limitations if possible.
      *
      * @param instance instance of which field's value is get
-     * @return value of this field (static)
+     * @return value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
     V getValue(T instance);
@@ -43,8 +43,8 @@ public interface FieldWrapper<T, V> extends ReflectorWrapper<Field> {
      * Gets value of this field on no instance (which means that static value is to be got)
      * ignoring any limitations if possible.
      *
-     * @return value of this {@code static} field
-     * @throws NullPointerException if this field is not {@code static}
+     * @return value of this static field
+     * @throws NullPointerException if this field is not static
      */
     V getValue();
 
@@ -61,83 +61,94 @@ public interface FieldWrapper<T, V> extends ReflectorWrapper<Field> {
      * Sets value of this field on no instance (which means that static value is to be set)
      * ignoring any limitations if possible.
      *
-     * @param value value to set to this field
-     * @throws NullPointerException if this field is not {@code static}
+     * @param value value to set to this static field
+     * @throws NullPointerException if this field is not static
      */
     void setValue(V value);
 
-    // updates (get and change)
-
     /**
-     * Updates value of this field ignoring any limitations if possible.
+     * Updates value of this field ignoring any limitations if possible and returning previous value.
      *
      * @param instance instance of which field's value is set
      * @param value value to set to this field
      * @return previous value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    default V updateValue(T instance, V value) {
-        val oldValue = getValue(instance);
+    default V getAndUpdate(T instance, V value) {
+        val previousValue = getValue(instance);
         setValue(instance, value);
 
-        return oldValue;
+        return previousValue;
     }
 
     /**
-     * Updates value of this field on no instance (which means that static value is to be updated)
-     * ignoring any limitations if possible.
+     * Updates value of {@code static} field ignoring any limitations if possible and returning previous value.
      *
      * @param value value to set to this field
-     * @return previous value of this field
-     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
+     * @return previous value of this static field
+     * @throws NullPointerException if this field is not static
      */
-    default V updateValue(V value) {
-        val oldValue = getValue();
+    default V getAndUpdate(V value) {
+        val previousValue = getValue();
         setValue(value);
 
-        return oldValue;
+        return previousValue;
     }
 
     /**
-     * Updates value of this field based on previous value using function given ignoring any limitations if possible.
-     *
-     * @param instance instance of which field's value is set
-     * @param operator operator to create new value based on old
-     * @return previous value of this field
-     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
-     */
-    default V updateValue(T instance, @NonNull UnaryOperator<V> operator) {
-        val oldValue = getValue(instance);
-        setValue(instance, operator.apply(oldValue));
-
-        return oldValue;
-    }
-
-    /**
-     * Updates value of this field based on previous value using function given
-     * on no instance (which means that static value is to be updated) ignoring any limitations if possible.
+     * Updates value of this field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning previous value.
      *
      * @param operator operator to create new value based on old
      * @return previous value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    default V updateValue(@NonNull UnaryOperator<V> operator) {
-        val oldValue = getValue();
-        setValue(operator.apply(oldValue));
+    default V getAndCompute(final T instance, @NonNull final UnaryOperator<V> operator) {
+        val previousValue = getValue(instance);
+        setValue(instance, operator.apply(previousValue));
 
-        return oldValue;
+        return previousValue;
     }
 
-    //computes (change and get)
+    /**
+     * Updates value of {@code static} field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning previous value.
+     *
+     * @param operator operator to create new value based on old
+     * @return previous value of this static field
+     * @throws NullPointerException if this field is not static
+     */
+    default V getAndCompute(@NonNull final UnaryOperator<V> operator) {
+        val previousValue = getValue();
+        setValue(operator.apply(previousValue));
 
-    default V computeValue(T instance, @NonNull UnaryOperator<V> operator) {
+        return previousValue;
+    }
+
+    /**
+     * Updates value of this field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning newly computed value.
+     *
+     * @param operator operator to create new value based on old
+     * @return new value of this field
+     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
+     */
+    default V computeAndGet(final T instance, @NonNull final UnaryOperator<V> operator) {
         val newValue = operator.apply(getValue(instance));
         setValue(instance, newValue);
 
         return newValue;
     }
 
-    default V computeValue(@NonNull UnaryOperator<V> operator) {
+    /**
+     * Updates value of {@code static} field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning newly computed value.
+     *
+     * @param operator operator to create new value based on old
+     * @return new value of this static field
+     * @throws NullPointerException if this field is not static
+     */
+    default V computeAndGet(@NonNull final UnaryOperator<V> operator) {
         val newValue = operator.apply(getValue());
         setValue(newValue);
 

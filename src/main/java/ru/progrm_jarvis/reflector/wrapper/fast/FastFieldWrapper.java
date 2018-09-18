@@ -21,7 +21,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.Value;
-import ru.progrm_jarvis.reflector.MethodHandleBuilder;
+import ru.progrm_jarvis.reflector.invoke.MethodHandleUtil;
 import ru.progrm_jarvis.reflector.util.Caches;
 import ru.progrm_jarvis.reflector.wrapper.AbstractFieldWrapper;
 
@@ -54,8 +54,8 @@ public class FastFieldWrapper<T, V>
     public static <T, V> FastFieldWrapper<T, V> from(@NonNull final Field field) {
         return (FastFieldWrapper<T, V>) CACHE.get(field, () -> new FastFieldWrapper<T, V>(
                 field,
-                MethodHandleBuilder.methodHandleFromGetter(field),
-                MethodHandleBuilder.methodHandleFromSetter(field)
+                MethodHandleUtil.methodHandleFromGetter(field),
+                MethodHandleUtil.methodHandleFromSetter(field)
         ));
     }
 
