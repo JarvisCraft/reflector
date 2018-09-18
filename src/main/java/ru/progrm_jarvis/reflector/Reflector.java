@@ -16,6 +16,7 @@
 
 package ru.progrm_jarvis.reflector;
 
+import lombok.Getter;
 import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
@@ -41,10 +42,10 @@ import java.util.function.Predicate;
 @SuppressWarnings({"unused", "WeakerAccess"})
 public class Reflector {
 
-    private static final SafeClassDefiner SAFE_CLASS_DEFINER = new SafeClassDefiner();
+    @Getter private static final SafeClassDefiner SAFE_CLASS_DEFINER = new SafeClassDefiner();
 
     ///////////////////////////////////////////////////////////////////////////
-    // Unwrapped
+    // Digging
     ///////////////////////////////////////////////////////////////////////////
 
     /**
@@ -110,7 +111,8 @@ public class Reflector {
     ) {
         return RecursiveClassDigger
                 .dig(clazz, (ThrowingFunction<Class<? super T>, ValueContainer<Field>, Throwable>) owner -> {
-                    for (val field : owner.getDeclaredFields()) if (condition.test(field)) return ValueContainer.of(field);
+                    for (val field : owner.getDeclaredFields()) if (condition
+                            .test(field)) return ValueContainer.of(field);
                     return null;
                     }, bound);
     }
@@ -325,24 +327,22 @@ public class Reflector {
     ///////////////////////////////////////////////////////////////////////////
 
     @SneakyThrows
-    public <T> Constructor<? extends T> getConstructor(@NonNull final Class<T> clazz,
-                                                       @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<T> getConstructor(@NonNull final Class<T> clazz, @NonNull final Class<?>... parameterTypes) {
         return clazz.getConstructor(parameterTypes);
     }
 
-    public <T> Constructor<? extends T> getConstructor(@NonNull final T object,
-                                                       @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<T> getConstructor(@NonNull final T object, @NonNull final Class<?>... parameterTypes) {
         return getConstructor(classOf(object), parameterTypes);
     }
 
     @SneakyThrows
-    public <T> Constructor<? extends T> getDeclaredConstructor(@NonNull final Class<T> clazz,
-                                                               @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<T> getDeclaredConstructor(@NonNull final Class<T> clazz,
+                                                     @NonNull final Class<?>... parameterTypes) {
         return clazz.getDeclaredConstructor(parameterTypes);
     }
 
-    public <T> Constructor<? extends T> getDeclaredConstructor(@NonNull final T object,
-                                                               @NonNull final Class<?>... parameterTypes) {
+    public <T> Constructor<T> getDeclaredConstructor(@NonNull final T object,
+                                                     @NonNull final Class<?>... parameterTypes) {
         return getDeclaredConstructor(classOf(object), parameterTypes);
     }
 

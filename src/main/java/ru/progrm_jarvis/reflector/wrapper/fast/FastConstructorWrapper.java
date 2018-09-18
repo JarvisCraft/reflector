@@ -49,7 +49,7 @@ public class FastConstructorWrapper<T>
 
     @SneakyThrows
     @SuppressWarnings("unchecked")
-    public static <T> FastConstructorWrapper<T> from(@NonNull final Constructor<T> constructor) {
+    public static <T> FastConstructorWrapper<T> from(@NonNull final Constructor<? extends T> constructor) {
         return (FastConstructorWrapper<T>) CACHE.get(constructor, () -> new FastConstructorWrapper<>(
                 constructor, MethodHandleUtil.methodHandleFrom(constructor)
         ));
