@@ -14,14 +14,24 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
+
+import java.lang.annotation.*;
+
 
 /**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
+ * Indicates that the annotated field should be mirrored
  */
-public interface ReflectorWrapper<T> {
+@Inherited
+@Target(ElementType.FIELD)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface MirroredField {
 
-    T getWrappedValue();
+    /**
+     * The expression which should be used to initialize field's value.
+     *
+     * @return pure java expression to be used for field initialization
+     */
+    String value() default "";
 }

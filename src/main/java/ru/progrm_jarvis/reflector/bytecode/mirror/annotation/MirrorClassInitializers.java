@@ -14,14 +14,18 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
+
+import java.lang.annotation.*;
 
 /**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
+ * Indicates that class initializers should or should not be mirrored
  */
-public interface ReflectorWrapper<T> {
+@Inherited
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MirrorClassInitializers {
 
-    T getWrappedValue();
+    boolean value() default true;
 }

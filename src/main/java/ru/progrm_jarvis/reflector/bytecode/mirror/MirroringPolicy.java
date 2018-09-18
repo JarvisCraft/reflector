@@ -14,14 +14,29 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.bytecode.mirror;
 
-/**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
- */
-public interface ReflectorWrapper<T> {
+public enum MirroringPolicy {
 
-    T getWrappedValue();
+    /**
+     * No members should be mirrored
+     */
+    NONE,
+    /**
+     * Only visible methods (<i>public</i>) should be mirrored
+     */
+    VISIBLE,
+    /* This may be added
+    /**
+     * Only members related to implementing some interfaces should be mirrored
+    IMPLEMENTING,
+     */
+    /**
+     * Only annotated members should be mirrored
+     */
+    ANNOTATED,
+    /**
+     * Each member should be mirrored
+     */
+    ALL
 }

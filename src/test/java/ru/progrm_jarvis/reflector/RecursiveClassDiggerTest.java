@@ -22,10 +22,10 @@ import ru.progrm_jarvis.reflector.util.ValueContainer;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-public class RecursiveClassDiggerTest {
+class RecursiveClassDiggerTest {
 
     @Test
-    public void testDig() throws Throwable {
+    void testDig() throws Throwable {
         assertEquals(Object3.class, RecursiveClassDigger.<Object3, Void, Throwable>dig(Object3.class,
                 clazz -> clazz.getSimpleName().equals("Object3") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());
@@ -44,7 +44,7 @@ public class RecursiveClassDiggerTest {
     }
 
     @Test
-    public void testDigWithInterfaces() throws Throwable {
+    void testDigWithInterfaces() throws Throwable {
         assertEquals(Object4.class, RecursiveClassDigger.<Void, Throwable>digWithInterfaces(Object4.class,
                 clazz -> clazz.getSimpleName().equals("Object4") ? ValueContainer.empty() : null, Object.class)
                 .orElseThrow(AssertionError::new).getOwner());

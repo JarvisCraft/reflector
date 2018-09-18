@@ -14,39 +14,41 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.util;
+package ru.progrm_jarvis.reflector.util.function;
 
 import lombok.SneakyThrows;
 
-import java.util.function.Consumer;
+import java.util.function.Function;
 
 /**
  * {@inheritDoc}
- * This {@code Consumer} extension provides {@link #consume(Object)} method
- * which is the same as {@link #accept(Object)} but is declared as {@code throws Throwable}
+ * This {@code Function} extension provides {@link #use(T)} method
+ * which is the same as {@link #apply(T)} but is declared as {@code throws {@link Throwable}}
  *
- * @param <T> the type of the input to the operation
+ * @param <T> the type of the input to the function
+ * @param <R> the type of the result of the function
  */
 @FunctionalInterface
-public interface CheckedConsumer<T> extends Consumer<T> {
+public interface CheckedFunction<T, R> extends Function<T, R> {
 
     /**
-     * Performs this operation on the given argument.
+     * Applies this function to the given argument.
      *
-     * @param t the input argument
+     * @param t the function argument
+     * @return the function result
      * @throws Throwable if an exception occurs while performing
      */
-    void consume(T t) throws Throwable;
+    R use(T t) throws Throwable;
 
     /**
      * {@inheritDoc}
-     * Invokes {@link #consume(Object)} wrapping any thrown catched exception with {@code RuntimeException}.
+     * Invokes {@link #use(T)} wrapping any thrown catched exception with {@link RuntimeException}.
      *
      * @throws RuntimeException if an exception occurs while performing
      */
     @Override
     @SneakyThrows
-    default void accept(final T t) {
-        consume(t);
+    default R apply(T t) {
+        return use(t);
     }
 }

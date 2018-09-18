@@ -16,76 +16,37 @@
 
 package ru.progrm_jarvis.reflector.wrapper;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
-import lombok.*;
-import org.jetbrains.annotations.Nullable;
-import ru.progrm_jarvis.reflector.AccessHelper;
+import lombok.NonNull;
+import lombok.val;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 /**
- * Wrapper for {@link Field} to be used with Reflector
+ * Wrapper for {@link Field}
  *
  * @param <T> type of class containing this field
  * @param <V> type of value contained in this field
  */
-@Value
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class FieldWrapper<T, V> implements ReflectorWrapper {
-
-    /**
-     * Cache of field wrappers
-     */
-    private static final Cache<Field, FieldWrapper<?, ?>> CACHE = CacheBuilder.newBuilder().weakValues().build();
-
-    /**
-     * Actual field wrapped.
-     */
-    @NonNull private Field field;
-
-    /**
-     * Creates new field wrapper instance for the field given or gets it from cache if one already exists.
-     *
-     * @param field field to get wrapped
-     * @param <T> type containing this field
-     * @param <V> type of this field's value
-     * @return field wrapper created or got from cache
-     */
-    @SuppressWarnings("unchecked")
-    public static <T, V> FieldWrapper<T, V> of(@NonNull final Field field) {
-        try {
-            return ((FieldWrapper<T, V>) CACHE.get(field, () -> new FieldWrapper<>(field)));
-        } catch (final ExecutionException e) {
-            throw new RuntimeException("Could not obtain FieldWrapper<V> value from cache");
-        }
-    }
+public interface FieldWrapper<T, V> extends ReflectorWrapper<Field> {
 
     /**
      * Gets value of this field ignoring any limitations if possible.
      *
      * @param instance instance of which field's value is get
-     * @return value of this field (static)
+     * @return value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    public V getValue(@Nullable final T instance) {
-        return AccessHelper.accessAndGet(field, field -> (V) field.get(instance));
-    }
+    V getValue(T instance);
 
     /**
      * Gets value of this field on no instance (which means that static value is to be got)
      * ignoring any limitations if possible.
      *
-     * @return value of this {@code static} field
-     * @throws NullPointerException if this field is not {@code static}
+     * @return value of this static field
+     * @throws NullPointerException if this field is not static
      */
-    public V getValue() {
-        return getValue(null);
-    }
+    V getValue();
 
     /**
      * Sets value of this field ignoring any limitations if possible.
@@ -94,83 +55,103 @@ public class FieldWrapper<T, V> implements ReflectorWrapper {
      * @param value value to set to this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    @SneakyThrows
-    public void setValue(@Nullable final T instance, @Nullable final V value) {
-        AccessHelper.operate(field, field -> field.set(instance, value));
-    }
+    void setValue(T instance, V value);
 
     /**
      * Sets value of this field on no instance (which means that static value is to be set)
      * ignoring any limitations if possible.
      *
-     * @param value value to set to this field
-     * @throws NullPointerException if this field is not {@code static}
+     * @param value value to set to this static field
+     * @throws NullPointerException if this field is not static
      */
-    public void setValue(@Nullable final V value) {
-        setValue(null, value);
-    }
+    void setValue(V value);
 
     /**
-     * Updates value of this field ignoring any limitations if possible.
+     * Updates value of this field ignoring any limitations if possible and returning previous value.
      *
      * @param instance instance of which field's value is set
      * @param value value to set to this field
      * @return previous value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    public V updateValue(@Nullable final T instance, @Nullable final V value) {
-        return AccessHelper.operateAndGet(field, field -> {
-            val oldValue = (V) field.get(instance);
+    default V getAndUpdate(T instance, V value) {
+        val previousValue = getValue(instance);
+        setValue(instance, value);
 
-            field.set(instance, value);
-
-            return oldValue;
-        });
+        return previousValue;
     }
 
     /**
-     * Updates value of this field on no instance (which means that static value is to be updated)
-     * ignoring any limitations if possible.
+     * Updates value of {@code static} field ignoring any limitations if possible and returning previous value.
      *
      * @param value value to set to this field
-     * @return previous value of this field
-     * @throws NullPointerException if {@code object} is {@code null} but this field is not static
+     * @return previous value of this static field
+     * @throws NullPointerException if this field is not static
      */
-    public V updateValue(@Nullable final V value) {
-        return updateValue(null, value);
+    default V getAndUpdate(V value) {
+        val previousValue = getValue();
+        setValue(value);
+
+        return previousValue;
     }
 
     /**
-     * Updates value of this field based on previous value using function given ignoring any limitations if possible.
+     * Updates value of this field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning previous value.
      *
-     * @param instance instance of which field's value is set
-     * @param function function to create new value based on old
+     * @param operator operator to create new value based on old
      * @return previous value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    @SneakyThrows
-    @SuppressWarnings("unchecked")
-    public V updateValue(@Nullable final T instance, @NonNull final Function<V, V> function) {
-        return AccessHelper.operateAndGet(field, field -> {
-            val oldValue = (V) field.get(instance);
+    default V getAndCompute(final T instance, @NonNull final UnaryOperator<V> operator) {
+        val previousValue = getValue(instance);
+        setValue(instance, operator.apply(previousValue));
 
-            field.set(instance, function.apply(oldValue));
-
-            return oldValue;
-        });
+        return previousValue;
     }
 
     /**
-     * Updates value of this field based on previous value using function given
-     * on no instance (which means that static value is to be updated) ignoring any limitations if possible.
+     * Updates value of {@code static} field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning previous value.
      *
-     * @param function function to create new value based on old
-     * @return previous value of this field
+     * @param operator operator to create new value based on old
+     * @return previous value of this static field
+     * @throws NullPointerException if this field is not static
+     */
+    default V getAndCompute(@NonNull final UnaryOperator<V> operator) {
+        val previousValue = getValue();
+        setValue(operator.apply(previousValue));
+
+        return previousValue;
+    }
+
+    /**
+     * Updates value of this field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning newly computed value.
+     *
+     * @param operator operator to create new value based on old
+     * @return new value of this field
      * @throws NullPointerException if {@code object} is {@code null} but this field is not static
      */
-    public V updateValue(@NonNull final Function<V, V> function) {
-        return updateValue(null, function);
+    default V computeAndGet(final T instance, @NonNull final UnaryOperator<V> operator) {
+        val newValue = operator.apply(getValue(instance));
+        setValue(instance, newValue);
+
+        return newValue;
+    }
+
+    /**
+     * Updates value of {@code static} field based on previous value using unary operator given
+     * ignoring any limitations if possible and returning newly computed value.
+     *
+     * @param operator operator to create new value based on old
+     * @return new value of this static field
+     * @throws NullPointerException if this field is not static
+     */
+    default V computeAndGet(@NonNull final UnaryOperator<V> operator) {
+        val newValue = operator.apply(getValue());
+        setValue(newValue);
+
+        return newValue;
     }
 }

@@ -28,7 +28,7 @@ see [Maven Central versions](https://mvnrepository.com/artifact/ru.progrm-jarvis
 This example shows how you can work with fields using reflector
 ```java
 import ru.progrm_jarvis.reflector.Reflector;
-import ru.progrm_jarvis.reflector.wrapper.FieldWrapper;
+import FieldWrapper;
 
 public class StringModifier {
     private static final FieldWrapper<String, char[]> STRING_CLASS__VALUE_FIELD = Reflector.getField(String.class, "value");

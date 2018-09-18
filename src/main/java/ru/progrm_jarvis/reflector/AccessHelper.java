@@ -20,8 +20,8 @@ import lombok.NonNull;
 import lombok.SneakyThrows;
 import lombok.experimental.UtilityClass;
 import lombok.val;
-import ru.progrm_jarvis.reflector.util.CheckedConsumer;
-import ru.progrm_jarvis.reflector.util.CheckedFunction;
+import ru.progrm_jarvis.reflector.util.function.CheckedConsumer;
+import ru.progrm_jarvis.reflector.util.function.CheckedFunction;
 
 import java.lang.reflect.*;
 

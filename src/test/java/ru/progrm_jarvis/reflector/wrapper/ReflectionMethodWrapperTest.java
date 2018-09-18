@@ -3,7 +3,7 @@
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
- *    You may obtain a copy testOf the License at
+ *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -18,29 +18,30 @@ package ru.progrm_jarvis.reflector.wrapper;
 
 import lombok.val;
 import org.junit.jupiter.api.Test;
+import ru.progrm_jarvis.reflector.wrapper.reflection.ReflectionMethodWrapper;
 
 import java.lang.reflect.InvocationTargetException;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static ru.progrm_jarvis.reflector.wrapper.MethodWrapper.of;
 
-public class MethodWrapperTest {
+class ReflectionMethodWrapperTest {
 
     @Test
-    public void testOf() throws NoSuchMethodException {
-        assertThrows(NullPointerException.class, () -> of(null));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredMethod("staticVoidMethod")));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredMethod("staticStringMethod")));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredMethod("voidMethod")));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredMethod("stringMethod")));
+    void testOf() throws NoSuchMethodException {
+        assertThrows(NullPointerException.class, () -> ReflectionMethodWrapper.from(null));
+
+        assertNotNull(ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("staticVoidMethod")));
+        assertNotNull(ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("staticStringMethod")));
+        assertNotNull(ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("voidMethod")));
+        assertNotNull(ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("stringMethod")));
     }
 
     @Test
-    public void testInvoke() throws NoSuchMethodException {
+    void testInvoke() throws NoSuchMethodException {
         val instance = new PrivateStaticClass();
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("staticVoidMethod"));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("staticVoidMethod"));
 
             assertNull(method.invokeStatic());
             assertNull(method.invoke(null));
@@ -51,7 +52,7 @@ public class MethodWrapperTest {
         }
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("staticStringMethod"));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("staticStringMethod"));
 
             assertEquals(method.invokeStatic(), "hello");
             assertEquals(method.invoke(null), "hello");
@@ -62,7 +63,7 @@ public class MethodWrapperTest {
         }
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("voidMethod"));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("voidMethod"));
 
             assertThrows(NullPointerException.class, method::invokeStatic);
             assertThrows(NullPointerException.class, () -> method.invoke(null));
@@ -71,7 +72,7 @@ public class MethodWrapperTest {
         }
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("stringMethod"));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("stringMethod"));
 
             assertThrows(NullPointerException.class, method::invokeStatic);
             assertThrows(NullPointerException.class, () -> method.invoke(null));
@@ -80,7 +81,7 @@ public class MethodWrapperTest {
         }
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("foo", boolean.class));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("foo", boolean.class));
 
             assertThrows(IllegalArgumentException.class, method::invokeStatic);
             assertThrows(IllegalArgumentException.class, () -> method.invoke(null));
@@ -90,7 +91,7 @@ public class MethodWrapperTest {
         }
 
         {
-            val method = of(PrivateStaticClass.class.getDeclaredMethod("thrower"));
+            val method = ReflectionMethodWrapper.from(PrivateStaticClass.class.getDeclaredMethod("thrower"));
             assertThrows(InvocationTargetException.class, method::invokeStatic);
             assertThrows(InvocationTargetException.class, () -> method.invoke(null));
             assertThrows(InvocationTargetException.class, () -> method.invoke(instance));
@@ -99,15 +100,15 @@ public class MethodWrapperTest {
 
     private static final class PrivateStaticClass {
 
-        public static void staticVoidMethod() {}
+        private static void staticVoidMethod() {}
 
-        public static String staticStringMethod() {
+        private static String staticStringMethod() {
             return "hello";
         }
 
-        public void voidMethod() {}
+        private void voidMethod() {}
 
-        public String stringMethod() {
+        private String stringMethod() {
             return "world";
         }
 

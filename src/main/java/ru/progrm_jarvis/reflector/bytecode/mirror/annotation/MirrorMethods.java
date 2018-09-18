@@ -14,14 +14,20 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
+
+import ru.progrm_jarvis.reflector.bytecode.mirror.MirroringPolicy;
+
+import java.lang.annotation.*;
 
 /**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
+ * Indicates that methods should be mirrored according to {@link MirroringPolicy}
  */
-public interface ReflectorWrapper<T> {
+@Inherited
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MirrorMethods {
 
-    T getWrappedValue();
+    MirroringPolicy value() default MirroringPolicy.ALL;
 }

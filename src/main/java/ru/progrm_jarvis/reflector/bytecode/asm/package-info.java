@@ -13,15 +13,10 @@
  *    See the License for the specific language governing permissions and
  *    limitations under the License.
  */
-
-package ru.progrm_jarvis.reflector.wrapper;
-
 /**
- * Super-interface for all reflector-wrappers
+ * Allows you to create objects without invoking constructor
  *
- * @param <T> type of wrapped value
+ * @author hyndor
  */
-public interface ReflectorWrapper<T> {
+package ru.progrm_jarvis.reflector.bytecode.asm;
 
-    T getWrappedValue();
-}

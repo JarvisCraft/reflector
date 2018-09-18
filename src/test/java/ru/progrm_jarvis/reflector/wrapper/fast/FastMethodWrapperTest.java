@@ -14,14 +14,27 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.wrapper;
+package ru.progrm_jarvis.reflector.wrapper.fast;
 
-/**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
- */
-public interface ReflectorWrapper<T> {
+import lombok.val;
+import org.junit.jupiter.api.Test;
 
-    T getWrappedValue();
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+class FastMethodWrapperTest {
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testInvoke() throws NoSuchMethodException {
+        val fooFooMethod = FastMethodWrapper.<Foo, Integer>from(Foo.class.getDeclaredMethod("foo"));
+
+        assertEquals(1, fooFooMethod.invoke(new Foo()).intValue());
+
+    }
+
+    private static class Foo {
+        private int foo() {
+            return 1;
+        }
+    }
 }

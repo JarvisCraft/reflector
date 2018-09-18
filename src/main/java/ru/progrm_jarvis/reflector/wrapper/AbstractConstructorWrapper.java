@@ -16,12 +16,22 @@
 
 package ru.progrm_jarvis.reflector.wrapper;
 
-/**
- * Super-interface for all reflector-wrappers
- *
- * @param <T> type of wrapped value
- */
-public interface ReflectorWrapper<T> {
+import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
+import lombok.RequiredArgsConstructor;
+import lombok.ToString;
 
-    T getWrappedValue();
+import java.lang.reflect.Constructor;
+
+@ToString
+@EqualsAndHashCode
+@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class AbstractConstructorWrapper<T> implements ConstructorWrapper<T> {
+
+    protected final Constructor<T> constructor;
+
+    @Override
+    public Constructor<T> getWrappedValue() {
+        return constructor;
+    }
 }

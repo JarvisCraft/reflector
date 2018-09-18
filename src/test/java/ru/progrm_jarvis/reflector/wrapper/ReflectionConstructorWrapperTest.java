@@ -3,7 +3,7 @@
  *
  *    Licensed under the Apache License, Version 2.0 (the "License");
  *    you may not use this file except in compliance with the License.
- *    You may obtain a copy testOf the License at
+ *    You may obtain a copy of the License at
  *
  *        http://www.apache.org/licenses/LICENSE-2.0
  *
@@ -17,32 +17,34 @@
 package ru.progrm_jarvis.reflector.wrapper;
 
 import lombok.val;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.progrm_jarvis.reflector.wrapper.reflection.ReflectionConstructorWrapper;
 
 import java.lang.reflect.InvocationTargetException;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static ru.progrm_jarvis.reflector.wrapper.ConstructorWrapper.of;
 
-public class ConstructorWrapperTest {
+class ReflectionConstructorWrapperTest {
 
     @Test
-    public void testOf() throws NoSuchMethodException {
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredConstructor()));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredConstructor(int.class)));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredConstructor(boolean.class)));
-        assertNotNull(of(PrivateStaticClass.class.getDeclaredConstructor(String.class)));
+    void testOf() throws NoSuchMethodException {
+        assertThrows(NullPointerException.class, () -> ReflectionConstructorWrapper.from(null));
+
+        assertNotNull(ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor()));
+        assertNotNull(ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(int.class)));
+        assertNotNull(ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(boolean.class)));
+        assertNotNull(ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(String.class)));
     }
 
     @Test
-    public void testConstruct() throws NoSuchMethodException {
-        assertEquals(1, of(PrivateStaticClass.class.getDeclaredConstructor()).construct().value);
+    void testConstruct() throws NoSuchMethodException {
+        Assertions.assertEquals(1, ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor()).construct().value);
 
         {
-            val constructor = of(PrivateStaticClass.class.getDeclaredConstructor(int.class));
-            assertEquals(2, constructor.construct(2).value);
+            val constructor = ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(int.class));
+            Assertions.assertEquals(2, constructor.construct(2).value);
             assertThrows(IllegalArgumentException.class, constructor::construct);
             assertThrows(IllegalArgumentException.class, () -> constructor.construct(1, 2));
             assertThrows(IllegalArgumentException.class, () -> constructor.construct((Object) null));
@@ -50,7 +52,7 @@ public class ConstructorWrapperTest {
         }
 
         {
-            val constructor = of(PrivateStaticClass.class.getDeclaredConstructor(boolean.class));
+            val constructor = ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(boolean.class));
             assertThrows(InvocationTargetException.class, () -> constructor.construct(true));
             assertThrows(InvocationTargetException.class, () -> constructor.construct(false));
             assertThrows(IllegalArgumentException.class, constructor::construct);
@@ -60,7 +62,7 @@ public class ConstructorWrapperTest {
         }
 
         {
-            val constructor = of(PrivateStaticClass.class.getDeclaredConstructor(String.class));
+            val constructor = ReflectionConstructorWrapper.from(PrivateStaticClass.class.getDeclaredConstructor(String.class));
             assertThrows(InvocationTargetException.class, () -> constructor.construct("hello"));
             assertThrows(InvocationTargetException.class, () -> constructor.construct((Object) null));
             assertThrows(IllegalArgumentException.class, constructor::construct);

@@ -14,24 +14,20 @@
  *    limitations under the License.
  */
 
-package ru.progrm_jarvis.reflector.util;
+package ru.progrm_jarvis.reflector.bytecode.mirror.annotation;
+
+import ru.progrm_jarvis.reflector.bytecode.mirror.MirroringPolicy;
+
+import java.lang.annotation.*;
 
 /**
- * {@inheritDoc}
- * This is the same as normal {@code CheckedFunction} but its {@code Throwable} type is known at compile time
- *
- * @param <T> the type of the input to the function
- * @param <R> the type of the result of the function
- * @param <E> the type of the exception to be declared as checked
+ * Indicates that fields of this class should be mirrored according to {@link MirroringPolicy}
  */
-@FunctionalInterface
-public interface ThrowingFunction<T, R, E extends Throwable> extends CheckedFunction<T, R> {
+@Inherited
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+public @interface MirrorFields {
 
-    /**
-     * {@inheritDoc}
-     *
-     * @throws E if an exception occurs while performing
-     */
-    @Override
-    R use(T t) throws E;
+    MirroringPolicy value() default MirroringPolicy.ALL;
 }
