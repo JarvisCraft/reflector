@@ -13,7 +13,9 @@ import static org.objectweb.asm.Opcodes.*;
 @AllArgsConstructor
 public class AsmClassGenerator implements ClassGenerator {
 
-    private static volatile int generatedEmptyConstructorAccessorCount = 0;
+    public static final String[] EMPTY_CONSTRUCTOR_CREATOR_CLASS_NAME_STRING_ARRAY = {
+            EmptyConstructorCreator.class.getTypeName().replace('.', '/')
+    };
 
     @NonNull private ClassDefiner classDefiner;
     @NonNull private GeneratedClassNameSupplier classNameSupplier;
@@ -29,20 +31,20 @@ public class AsmClassGenerator implements ClassGenerator {
     public EmptyConstructorCreator newClassInstanceManipulator(@NonNull final Class<?> clazz) {
         val className = classNameSupplier.get();
 
-        String dotClassName = className.replace("/", ".");
-        String targetClassName = clazz.getName().replace(".", "/");
-        String superClassName = "sun/reflect/MagicAccessorImpl";
-        ClassWriter cw = new ClassWriter(0);
+        val dotClassName = className.replace("/", ".");
+        val targetClassName = clazz.getName().replace(".", "/");
+        val superClassName = "sun/reflect/MagicAccessorImpl";
+        val classWriter = new ClassWriter(0);
         MethodVisitor mv;
 
-        cw.visit(52, ACC_PUBLIC + ACC_SUPER, className, null, superClassName,
-                new String[]{
-                        "ru/progrm_jarvis/reflector/bytecode/asm/EmptyConstructorCreator"
-                });
+        classWriter.visit(
+                52, ACC_PUBLIC + ACC_SUPER, className, null, superClassName,
+                EMPTY_CONSTRUCTOR_CREATOR_CLASS_NAME_STRING_ARRAY
+        );
 
-        generateEmptyConstructor(cw, superClassName);
+        generateEmptyConstructor(classWriter, superClassName);
         {
-            mv = cw.visitMethod(ACC_PUBLIC, "newInstance", "()Ljava/lang/Object;", null, null);
+            mv = classWriter.visitMethod(ACC_PUBLIC, "newInstance", "()Ljava/lang/Object;", null, null);
             mv.visitCode();
             mv.visitTypeInsn(NEW, targetClassName);
             mv.visitInsn(DUP);
@@ -52,17 +54,16 @@ public class AsmClassGenerator implements ClassGenerator {
             mv.visitEnd();
         }
 
-        cw.visitEnd();
+        classWriter.visitEnd();
 
-        byte[] bytes = cw.toByteArray();
-        Class<?> aClass = classDefiner
-                .defineClass(classLoader == null ? getClass().getClassLoader() : classLoader,
-                        dotClassName, bytes);
+        val bytes = classWriter.toByteArray();
+        val definedClass = classDefiner.defineClass(classLoader == null
+                        ? getClass().getClassLoader() : classLoader, dotClassName, bytes);
 
-        return (EmptyConstructorCreator) aClass.newInstance();
+        return (EmptyConstructorCreator) definedClass.newInstance();
     }
 
-    private void generateEmptyConstructor(ClassWriter cw, String superClassName) {
+    private void generateEmptyConstructor(@NonNull final ClassWriter cw, @NonNull final String superClassName) {
         val methodVisitor = cw.visitMethod(ACC_PUBLIC, "<init>", "()V", null, null);
         methodVisitor.visitCode();
         methodVisitor.visitVarInsn(ALOAD, 0);
