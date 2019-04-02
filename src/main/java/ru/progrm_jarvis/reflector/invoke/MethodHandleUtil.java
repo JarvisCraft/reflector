@@ -1,5 +1,6 @@
 package ru.progrm_jarvis.reflector.invoke;
 
+import java.lang.invoke.MethodHandles.Lookup;
 import lombok.*;
 import lombok.experimental.Accessors;
 import ru.progrm_jarvis.reflector.AccessHelper;
@@ -11,6 +12,7 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Objects;
+import ru.progrm_jarvis.reflector.UnsafeUtil;
 
 public class MethodHandleUtil {
 
@@ -21,7 +23,7 @@ public class MethodHandleUtil {
     /**
      * Full lookup
      */
-            LOOKUP = MethodHandles.lookup();
+            LOOKUP = tryGetTrustedLookup();
 
     public static <T, R> MethodHandleBuilder<T, R> create() {
         return new MethodHandleBuilder<>();
@@ -51,6 +53,18 @@ public class MethodHandleUtil {
     public static MethodHandle methodHandleFromSpecial(@NonNull final Method method,
                                                        @NonNull final Class<?> specialCaller) {
         return AccessHelper.operateAndGet(method, m -> LOOKUP.unreflectSpecial(m, specialCaller));
+    }
+
+    private static Lookup tryGetTrustedLookup() {
+        // Just to initialize the class
+        MethodHandles.publicLookup();
+        try {
+            Field implLookupField = Lookup.class.getDeclaredField("IMPL_LOOKUP");
+            return (Lookup) UnsafeUtil.UNSAFE.getObject(UnsafeUtil.UNSAFE.staticFieldBase(implLookupField),
+                UnsafeUtil.UNSAFE.staticFieldOffset(implLookupField));
+        } catch (NoSuchFieldException ex) {
+            throw new AssertionError("IMPL_LOOKUP is missing!", ex);
+        }
     }
 
     /**

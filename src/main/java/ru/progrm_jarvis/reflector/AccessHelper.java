@@ -39,6 +39,7 @@ public class AccessHelper {
     static {
         try {
             FIELD_MODIFIERS = Field.class.getDeclaredField("modifiers");
+            FIELD_MODIFIERS.setAccessible(true);
         } catch (final NoSuchFieldException e) {
             throw new RuntimeException("Could not initialize reflector's AccessHelper due to exception", e);
         }
@@ -47,37 +48,22 @@ public class AccessHelper {
     public  <T extends AccessibleObject, R> R accessAndGet(final T object, final CheckedFunction<T, R> checkedFunction)
             throws Throwable {
         if (object.isAccessible()) return checkedFunction.use(object);
-        try {
-            object.setAccessible(true);
-            return checkedFunction.use(object);
-        } finally {
-            object.setAccessible(false);
-        }
+        object.setAccessible(true);
+        return checkedFunction.use(object);
     }
 
     public <T extends AccessibleObject> void access(final T object, final CheckedConsumer<T> checkedConsumer)
             throws Throwable {
         if (object.isAccessible()) checkedConsumer.consume(object);
-        else try {
-            object.setAccessible(true);
-            FIELD_MODIFIERS.setAccessible(true);
-            checkedConsumer.consume(object);
-        } finally {
-            object.setAccessible(false);
-        }
+        object.setAccessible(true);
+        checkedConsumer.consume(object);
     }
 
     @SneakyThrows
     public <R> R operateAndGet(@NonNull final Field field, @NonNull final CheckedFunction<Field, R> checkedFunction) {
         val modifiers = field.getModifiers();
         if (Modifier.isFinal(modifiers)) {
-            if (!FIELD_MODIFIERS.isAccessible()) FIELD_MODIFIERS.setAccessible(true);
-            try {
-                FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
-                return accessAndGet(field, checkedFunction);
-            } finally {
-                FIELD_MODIFIERS.set(field, modifiers);
-            }
+            FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
         }
         return accessAndGet(field, checkedFunction);
     }
@@ -86,14 +72,9 @@ public class AccessHelper {
     public void operate(@NonNull final Field field, @NonNull final CheckedConsumer<Field> checkedConsumer) {
         val modifiers = field.getModifiers();
         if (Modifier.isFinal(modifiers)) {
-            if (!FIELD_MODIFIERS.isAccessible()) FIELD_MODIFIERS.setAccessible(true);
-            try {
-                FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
-                access(field, checkedConsumer);
-            } finally {
-                FIELD_MODIFIERS.set(field, modifiers);
-            }
-        } else access(field, checkedConsumer);
+            FIELD_MODIFIERS.set(field, modifiers & ~Modifier.FINAL);
+        }
+        access(field, checkedConsumer);
     }
 
     @SneakyThrows
