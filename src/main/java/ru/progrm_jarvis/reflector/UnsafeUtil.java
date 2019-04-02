@@ -34,20 +34,15 @@ public class UnsafeUtil {
      * {@code public} instance of {@link Unsafe}
      */
     @SuppressWarnings("WeakerAccess")
-    public static Unsafe UNSAFE;
+    public static final Unsafe UNSAFE;
 
     static {
         try {
             val unsafeField = Unsafe.class.getDeclaredField("theUnsafe");
-            val accessible = unsafeField.isAccessible();
-            try {
-                unsafeField.setAccessible(true);
-                UNSAFE = (Unsafe) unsafeField.get(null);
-            } finally {
-                unsafeField.setAccessible(accessible);
-            }
+            unsafeField.setAccessible(true);
+            UNSAFE = (Unsafe) unsafeField.get(null);
         } catch (final NoSuchFieldException | IllegalAccessException e) {
-            e.printStackTrace();
+            throw new AssertionError("sun.misc.Unsafe not available", e);
         }
     }
 
