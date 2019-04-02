@@ -56,7 +56,7 @@ public class MethodHandleUtil {
     }
 
     private static Lookup tryGetTrustedLookup() {
-        // Just to initialize th class
+        // Just to initialize the class
         MethodHandles.publicLookup();
         try {
             Field implLookupField = Lookup.class.getDeclaredField("IMPL_LOOKUP");
